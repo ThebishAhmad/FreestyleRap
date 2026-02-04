@@ -1,0 +1,247 @@
+
+> app@0.1.0 build
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\hpp\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\hpp\Desktop\Goding\FreestyleRap\package-lock.json
+
+▲ Next.js 16.1.1 (Turbopack)
+
+  Creating an optimized production build ...
+Error: Cannot apply unknown utility class `border-border`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    [2m[at onInvalidCandidate (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:21:1314)][0m
+    [2m[at Te (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:16:36652)][0m
+    [2m[at C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:21:355][0m
+    [2m[at Rr (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:3:1718)][0m
+    [2m[at _ (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:3:1377)][0m
+    [2m[at $e (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:21:172)][0m
+    [2m[at un (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:38:294)][0m
+    [2m[at process.processTicksAndRejections (node:internal/process/task_queues:95:5)][0m
+    [2m[at async cn (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\tailwindcss\dist\lib.js:38:631)][0m
+    [2m[at async Xr (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\@tailwindcss\node\dist\index.js:10:3417)][0m
+
+> Build error occurred
+Error: Turbopack build failed with 9 errors:
+./Desktop/Goding/FreestyleRap/src/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: C:\Users\hpp\Desktop\Goding\FreestyleRap\src\app\globals.css:1:1: Cannot apply unknown utility class `border-border`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at Input.error (Desktop/Goding/FreestyleRap/node_modules/postcss/lib/input.js:135:16) [C:\Users\hpp\Desktop\Goding\FreestyleRap\.next\build\chunks\eeff5_9da0622f._.js:4651:22]
+    at Root.error (Desktop/Goding/FreestyleRap/node_modules/postcss/lib/node.js:146:32) [C:\Users\hpp\Desktop\Goding\FreestyleRap\.next\build\chunks\eeff5_9da0622f._.js:928:38]
+    [at Object.Once (C:\Users\hpp\Desktop\Goding\FreestyleRap\node_modules\@tailwindcss\postcss\dist\index.js:10:6911)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:95:5)]
+    at async LazyResult.runAsync (Desktop/Goding/FreestyleRap/node_modules/postcss/lib/lazy-result.js:293:11) [C:\Users\hpp\Desktop\Goding\FreestyleRap\.next\build\chunks\eeff5_9da0622f._.js:6206:21]
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [C:\Users\hpp\Desktop\Goding\FreestyleRap\.next\build\chunks\[root-of-the-server]__44358388._.js:146:36]
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [C:\Users\hpp\Desktop\Goding\FreestyleRap\.next\build\chunks\[root-of-the-server]__6bc72572._.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/globals.css [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/layout.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx:4:1
+Export BEATS doesn't exist in target module
+[0m [90m 2 |[39m
+ [90m 3 |[39m [36mimport[39m { useState[33m,[39m useRef[33m,[39m useEffect } [36mfrom[39m [32m"react"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 5 |[39m [36mimport[39m { [33mAudioContextManager[39m } [36mfrom[39m [32m"@/lib/audio/AudioContextManager"[39m[33m;[39m
+ [90m 6 |[39m [36mimport[39m { motion } [36mfrom[39m [32m"framer-motion"[39m[33m;[39m
+ [90m 7 |[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-client] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx:4:1
+Export BEATS doesn't exist in target module
+[0m [90m 2 |[39m
+ [90m 3 |[39m [36mimport[39m { useState[33m,[39m useRef[33m,[39m useEffect } [36mfrom[39m [32m"react"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 5 |[39m [36mimport[39m { [33mAudioContextManager[39m } [36mfrom[39m [32m"@/lib/audio/AudioContextManager"[39m[33m;[39m
+ [90m 6 |[39m [36mimport[39m { motion } [36mfrom[39m [32m"framer-motion"[39m[33m;[39m
+ [90m 7 |[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-ssr] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx:5:1
+Export BEATS doesn't exist in target module
+[0m [90m 3 |[39m [36mimport[39m { useState[33m,[39m useEffect[33m,[39m useRef } [36mfrom[39m [32m"react"[39m[33m;[39m
+ [90m 4 |[39m [36mimport[39m { [33mAudioContextManager[39m } [36mfrom[39m [32m"@/lib/audio/AudioContextManager"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 6 |[39m [36mimport[39m { [33mMicrophoneMonitor[39m } [36mfrom[39m [32m"@/components/features/MicrophoneMonitor"[39m[33m;[39m
+ [90m 7 |[39m [36mimport[39m { [33mVisualizer[39m } [36mfrom[39m [32m"@/components/features/Visualizer"[39m[33m;[39m
+ [90m 8 |[39m [36mimport[39m { [33mLink[39m } [36mfrom[39m [32m"lucide-react"[39m[33m;[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-client] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx:5:1
+Export BEATS doesn't exist in target module
+[0m [90m 3 |[39m [36mimport[39m { useState[33m,[39m useEffect[33m,[39m useRef } [36mfrom[39m [32m"react"[39m[33m;[39m
+ [90m 4 |[39m [36mimport[39m { [33mAudioContextManager[39m } [36mfrom[39m [32m"@/lib/audio/AudioContextManager"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 6 |[39m [36mimport[39m { [33mMicrophoneMonitor[39m } [36mfrom[39m [32m"@/components/features/MicrophoneMonitor"[39m[33m;[39m
+ [90m 7 |[39m [36mimport[39m { [33mVisualizer[39m } [36mfrom[39m [32m"@/components/features/Visualizer"[39m[33m;[39m
+ [90m 8 |[39m [36mimport[39m { [33mLink[39m } [36mfrom[39m [32m"lucide-react"[39m[33m;[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-ssr] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx:6:1
+Export BEATS doesn't exist in target module
+[0m [90m 4 |[39m [36mimport[39m [33mLink[39m [36mfrom[39m [32m"next/link"[39m[33m;[39m
+ [90m 5 |[39m [36mimport[39m { [33mMic[39m[33m,[39m [33mPlay[39m[33m,[39m [33mSquare[39m[33m,[39m [33mSkipForward[39m[33m,[39m [33mAlertTriangle[39m } [36mfrom[39m [32m"lucide-react"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m [36mimport[39m { [33mPromptEngine[39m[33m,[39m [33mPrompt[39m } [36mfrom[39m [32m"@/lib/game/PromptEngine"[39m[33m;[39m
+ [90m 8 |[39m [36mimport[39m { [33mConstraintEngine[39m } [36mfrom[39m [32m"@/lib/game/ConstraintEngine"[39m[33m;[39m
+ [90m 9 |[39m [36mimport[39m { [33mMicrophoneMonitor[39m } [36mfrom[39m [32m"@/components/features/MicrophoneMonitor"[39m[33m;[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-client] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx:6:1
+Export BEATS doesn't exist in target module
+[0m [90m 4 |[39m [36mimport[39m [33mLink[39m [36mfrom[39m [32m"next/link"[39m[33m;[39m
+ [90m 5 |[39m [36mimport[39m { [33mMic[39m[33m,[39m [33mPlay[39m[33m,[39m [33mSquare[39m[33m,[39m [33mSkipForward[39m[33m,[39m [33mAlertTriangle[39m } [36mfrom[39m [32m"lucide-react"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m [36mimport[39m { [33mPromptEngine[39m[33m,[39m [33mPrompt[39m } [36mfrom[39m [32m"@/lib/game/PromptEngine"[39m[33m;[39m
+ [90m 8 |[39m [36mimport[39m { [33mConstraintEngine[39m } [36mfrom[39m [32m"@/lib/game/ConstraintEngine"[39m[33m;[39m
+ [90m 9 |[39m [36mimport[39m { [33mMicrophoneMonitor[39m } [36mfrom[39m [32m"@/components/features/MicrophoneMonitor"[39m[33m;[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-ssr] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx:7:1
+Export BEATS doesn't exist in target module
+[0m [90m  5 |[39m [36mimport[39m { [33mRhymeEngine[39m[33m,[39m [33mRhyme[39m } [36mfrom[39m [32m"@/lib/rhymeEngine"[39m[33m;[39m
+ [90m  6 |[39m [36mimport[39m { [33mAudioContextManager[39m } [36mfrom[39m [32m"@/lib/audio/AudioContextManager"[39m[33m;[39m
+[31m[1m>[22m[39m[90m  7 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m  8 |[39m [36mimport[39m { [33mMicrophoneMonitor[39m } [36mfrom[39m [32m"@/components/features/MicrophoneMonitor"[39m[33m;[39m
+ [90m  9 |[39m [36mimport[39m { [33mVisualizer[39m } [36mfrom[39m [32m"@/components/features/Visualizer"[39m[33m;[39m
+ [90m 10 |[39m [36mimport[39m { motion[33m,[39m [33mAnimatePresence[39m } [36mfrom[39m [32m"framer-motion"[39m[33m;[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-client] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Server Component]
+
+
+./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx:7:1
+Export BEATS doesn't exist in target module
+[0m [90m  5 |[39m [36mimport[39m { [33mRhymeEngine[39m[33m,[39m [33mRhyme[39m } [36mfrom[39m [32m"@/lib/rhymeEngine"[39m[33m;[39m
+ [90m  6 |[39m [36mimport[39m { [33mAudioContextManager[39m } [36mfrom[39m [32m"@/lib/audio/AudioContextManager"[39m[33m;[39m
+[31m[1m>[22m[39m[90m  7 |[39m [36mimport[39m { [33mBeatPlayer[39m[33m,[39m [33mBEATS[39m } [36mfrom[39m [32m"@/lib/audio/BeatPlayer"[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m  8 |[39m [36mimport[39m { [33mMicrophoneMonitor[39m } [36mfrom[39m [32m"@/components/features/MicrophoneMonitor"[39m[33m;[39m
+ [90m  9 |[39m [36mimport[39m { [33mVisualizer[39m } [36mfrom[39m [32m"@/components/features/Visualizer"[39m[33m;[39m
+ [90m 10 |[39m [36mimport[39m { motion[33m,[39m [33mAnimatePresence[39m } [36mfrom[39m [32m"framer-motion"[39m[33m;[39m[0m
+
+The export BEATS was not found in module [project]/Desktop/Goding/FreestyleRap/src/lib/audio/BeatPlayer.ts [app-ssr] (ecmascript).
+Did you mean to import BeatPlayer?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Client Component Browser]
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Client Component SSR]
+    ./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx [Server Component]
+
+
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [C:\Users\hpp\Desktop\Goding\FreestyleRap\.next\build\chunks\[root-of-the-server]__44358388._.js:146:36])
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [C:\Users\hpp\Desktop\Goding\FreestyleRap\.next\build\chunks\[root-of-the-server]__6bc72572._.js:443:31])
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx:4:1)
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/battle/page.tsx:4:1)
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx:5:1)
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/drills/no-pause/page.tsx:5:1)
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx:6:1)
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/freestyle/page.tsx:6:1)
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx:7:1)
+    at <unknown> (./Desktop/Goding/FreestyleRap/src/app/rhyme-trainer/page.tsx:7:1)
