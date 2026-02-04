@@ -1,6 +1,5 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { Mic, BarChart2 } from "lucide-react";
+import { Mic } from "lucide-react";
 
 interface PlayerHUDProps {
     isActive: boolean;

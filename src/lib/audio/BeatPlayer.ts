@@ -130,7 +130,7 @@ export class BeatPlayer {
         this.loop = new Tone.Loop((time) => {
             try {
                 const t = (offset: string) => time + Tone.Time(offset).toSeconds();
-                const isFill = Math.random() < (complexity * 0.05);
+                // const isFill = Math.random() < (complexity * 0.05);
 
                 // --- TRAP / GRIME (Fast Hi-Hats, Heavy 808s) ---
                 if (style === "grime" || style === "trap") {

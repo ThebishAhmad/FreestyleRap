@@ -1,8 +1,4 @@
-import React from "react";
-import { motion } from "framer-motion";
 import { Trophy, Zap, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
-import { NeonButton } from "@/components/ui/neon-button";
 
 interface VersusHeaderProps {
     round: number;

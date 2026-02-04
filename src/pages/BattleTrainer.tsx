@@ -14,7 +14,6 @@ import { BattleStage } from "@/components/battle/BattleStage";
 import { OpponentAvatar } from "@/components/battle/OpponentAvatar";
 import { PlayerHUD } from "@/components/battle/PlayerHUD";
 import { EnergyBar } from "@/components/battle/EnergyBar";
-import { VersusHeader } from "@/components/battle/VersusHeader";
 import { CinematicLyrics } from "@/components/battle/CinematicLyrics";
 
 type Turn = "intro" | "ai" | "user" | "outro";

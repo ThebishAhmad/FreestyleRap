@@ -225,7 +225,7 @@ export const hyperspeedPresets = {
 };
 
 
-import { useEffect, useRef, FC } from 'react';
+import { useEffect, useRef, type FC } from 'react';
 import * as THREE from 'three';
 import { BloomEffect, EffectComposer, EffectPass, RenderPass, SMAAEffect, SMAAPreset } from 'postprocessing';
 

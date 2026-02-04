@@ -1,6 +1,5 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { Skull, Zap } from "lucide-react";
+import { Skull } from "lucide-react";
 
 interface OpponentAvatarProps {
     isActive: boolean;
