@@ -128,66 +128,71 @@ export class BeatPlayer {
         const complexity = this.currentBeat?.complexity_level || 3;
 
         this.loop = new Tone.Loop((time) => {
-            const t = (offset: string) => time + Tone.Time(offset).toSeconds();
-            const isFill = Math.random() < (complexity * 0.05);
+            try {
+                const t = (offset: string) => time + Tone.Time(offset).toSeconds();
+                const isFill = Math.random() < (complexity * 0.05);
 
-            // --- TRAP / GRIME (Fast Hi-Hats, Heavy 808s) ---
-            if (style === "grime" || style === "trap") {
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:2:2")); // Delayed kick
+                // --- TRAP / GRIME (Fast Hi-Hats, Heavy 808s) ---
+                if (style === "grime" || style === "trap") {
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:2:2")); // Delayed kick
 
-                this.snare?.triggerAttackRelease("8n", t("0:1:0"));
-                this.snare?.triggerAttackRelease("8n", t("0:3:0"));
+                    this.snare?.triggerAttackRelease("8n", t("0:1:0"));
+                    this.snare?.triggerAttackRelease("8n", t("0:3:0"));
 
-                // Rolling Hats
-                for (let i = 0; i < 8; i++) {
-                    const beat = Math.floor(i / 2);
-                    const sixteenth = (i % 2) * 2;
-                    // Random rolls
-                    if (Math.random() > 0.4) {
-                        this.hihat?.triggerAttackRelease("32n", t(`0:${beat}:${sixteenth}`), 0.3);
+                    // Rolling Hats (Optimized)
+                    for (let i = 0; i < 8; i++) { // 8th notes
+                        const beat = Math.floor(i / 2);
+                        const sixteenth = (i % 2) * 2;
+
+                        // Basic 8th pattern
+                        if (i % 2 === 0 || Math.random() > 0.3) {
+                            this.hihat?.triggerAttackRelease("32n", t(`0:${beat}:${sixteenth}`), 0.3);
+                        }
                     }
                 }
-            }
-            // --- DRILL (Syncopated Snare, Sliding Bass feel) ---
-            else if (style === "drill") {
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:1:3")); // Late kick
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:2:2"));
+                // --- DRILL (Syncopated Snare, Sliding Bass feel) ---
+                else if (style === "drill") {
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:1:3")); // Late kick
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:2:2"));
 
-                // Drill Snare Pattern (on 3 and 8 usually, translated to Tone time)
-                this.snare?.triggerAttackRelease("8n", t("0:1:0")); // 3
-                this.snare?.triggerAttackRelease("8n", t("0:2:2")); // 8 (delayed)
+                    // Drill Snare Pattern (on 3 and 8 usually, translated to Tone time)
+                    this.snare?.triggerAttackRelease("8n", t("0:1:0")); // 3
+                    this.snare?.triggerAttackRelease("8n", t("0:2:2")); // 8 (delayed)
 
-                // Fast triplet hats
-                if (Math.random() > 0.5) this.hihat?.triggerAttackRelease("32n", t("0:0:2"), 0.5);
-                this.hihat?.triggerAttackRelease("32n", t("0:1:2"), 0.5);
-                this.hihat?.triggerAttackRelease("32n", t("0:3:3"), 0.5);
-            }
-            // --- BOOM BAP (Swing, Simple) ---
-            else if (style === "afrobeat" || style === "boom-bap") {
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:1:2")); // Kick swing
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:2:1"));
-
-                this.snare?.triggerAttackRelease("8n", t("0:1:0"));
-                this.snare?.triggerAttackRelease("8n", t("0:3:0"));
-
-                // Steady Hats
-                for (let i = 0; i < 4; i++) {
-                    this.hihat?.triggerAttackRelease("16n", t(`0:${i}:0`), 0.7);
-                    this.hihat?.triggerAttackRelease("16n", t(`0:${i}:2`), 0.4);
+                    // Fast triplet hats
+                    if (Math.random() > 0.5) this.hihat?.triggerAttackRelease("32n", t("0:0:2"), 0.5);
+                    this.hihat?.triggerAttackRelease("32n", t("0:1:2"), 0.5);
+                    this.hihat?.triggerAttackRelease("32n", t("0:3:3"), 0.5);
                 }
-            }
-            // --- GENERIC / FALLBACK ---
-            else {
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
-                this.kick?.triggerAttackRelease("C1", "8n", t("0:2:0"));
-                this.snare?.triggerAttackRelease("8n", t("0:1:0"));
-                this.snare?.triggerAttackRelease("8n", t("0:3:0"));
-                for (let i = 0; i < 8; i++) {
-                    this.hihat?.triggerAttackRelease("32n", time + (i * Tone.Time("8n").toSeconds()), 0.5);
+                // --- BOOM BAP (Swing, Simple) ---
+                else if (style === "afrobeat" || style === "boom-bap") {
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:1:2")); // Kick swing
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:2:1"));
+
+                    this.snare?.triggerAttackRelease("8n", t("0:1:0"));
+                    this.snare?.triggerAttackRelease("8n", t("0:3:0"));
+
+                    // Steady Hats
+                    for (let i = 0; i < 4; i++) {
+                        this.hihat?.triggerAttackRelease("16n", t(`0:${i}:0`), 0.7);
+                        this.hihat?.triggerAttackRelease("16n", t(`0:${i}:2`), 0.4);
+                    }
                 }
+                // --- GENERIC / FALLBACK ---
+                else {
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:0:0"));
+                    this.kick?.triggerAttackRelease("C1", "8n", t("0:2:0"));
+                    this.snare?.triggerAttackRelease("8n", t("0:1:0"));
+                    this.snare?.triggerAttackRelease("8n", t("0:3:0"));
+                    for (let i = 0; i < 8; i++) {
+                        this.hihat?.triggerAttackRelease("32n", time + (i * Tone.Time("8n").toSeconds()), 0.5);
+                    }
+                }
+            } catch (e) {
+                console.error("Audio Loop Error:", e);
             }
 
         }, "1m").start(0);

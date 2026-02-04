@@ -56,7 +56,7 @@ export default function PatternDrill() {
     // EFFECT: Check Session End
     useEffect(() => {
         if (isPlaying && sessionLength !== "Infinity" && timing.currentBar >= sessionLength) {
-            stopGame();
+            stopGame("effect");
         }
     }, [timing.currentBar, isPlaying, sessionLength]);
 
@@ -67,13 +67,12 @@ export default function PatternDrill() {
             lastBeatIdRef.current = currentBeat.id;
         }
 
-        if (isPlaying && !countdown && currentBeat.id !== lastBeatIdRef.current) {
-            console.log("Hotswapping beat:", currentBeat.name);
+        // PREVENT HOTSWAP DURING PLAY - CAUSES SYNC BUGS
+        // Only load if NOT playing.
+        if (!isPlaying && !countdown && currentBeat.id !== lastBeatIdRef.current) {
+            // console.log("Pre-loading beat:", currentBeat.name);
             lastBeatIdRef.current = currentBeat.id;
-
-            beatPlayer.current.loadBeat(currentBeat).then(() => {
-                if (isPlaying) beatPlayer.current.start();
-            });
+            beatPlayer.current.loadBeat(currentBeat).catch(console.error);
         }
     }, [currentBeat, isPlaying, countdown]);
 
@@ -116,35 +115,56 @@ export default function PatternDrill() {
         if (currentBeat) lastBeatIdRef.current = currentBeat.id;
 
         // Resume Context on Click (User Gesture)
-        await AudioContextManager.getInstance().initialize();
+        try {
+            await AudioContextManager.getInstance().initialize();
 
-        // Load words/beat but don't play yet
-        await beatPlayer.current.loadBeat(currentBeat);
+            // Load words/beat but don't play yet
+            await beatPlayer.current.loadBeat(currentBeat);
 
-        // Mute initially
-        Tone.Destination.volume.value = -60;
+            // Mute initially
+            Tone.Destination.volume.value = -60;
 
-        // IMMEDIATE TRANSITION: Switch Scene First
-        setIsPlaying(true);
+            // IMMEDIATE TRANSITION: Switch Scene First
+            setIsPlaying(true);
 
-        // Start Countdown
-        setCountdown(3);
+            // Start Countdown
+            setCountdown(3);
+        } catch (error) {
+            console.error("Failed to start pattern drill:", error);
+            setIsPlaying(false);
+            // Optional: Show toast or error UI
+        }
     };
 
     const startAudio = async () => {
-        await beatPlayer.current.start();
-        Tone.Destination.volume.rampTo(-6, 0.5); // Quick fade-in
+        try {
+            await beatPlayer.current.start();
+            Tone.Destination.volume.rampTo(-6, 0.5); // Quick fade-in
+
+            // SCHEDULE AUTO-STOP (Post-Start to avoid .cancel() wipe)
+            if (sessionLength !== "Infinity") {
+                // Schedule stop exactly at the end of the last bar (e.g., "16:0:0")
+                Tone.Transport.scheduleOnce(() => {
+                    console.log("Session limit reached (Tone Scheduler)");
+                    stopGame("scheduler");
+                }, `${sessionLength}:0:0`);
+            }
+        } catch (e) {
+            console.error("Failed to start audio", e);
+            stopGame("error");
+        }
     };
 
-    const stopGame = () => {
-        // Fade out polish
-        Tone.Destination.volume.rampTo(-60, 0.5);
+    const stopGame = (source = "user") => {
+        console.log("Stopping Game. Source:", source);
+        // Fade out polish (Faster now)
+        Tone.Destination.volume.rampTo(-60, 0.1);
         setTimeout(() => {
             beatPlayer.current.stop();
             setIsPlaying(false);
             setCountdown(null);
             Tone.Destination.volume.value = -6; // Reset
-        }, 500);
+        }, 100);
     };
 
     const togglePattern = () => {
@@ -462,7 +482,7 @@ export default function PatternDrill() {
                                     className="flex justify-center mt-8"
                                 >
                                     <button
-                                        onClick={stopGame}
+                                        onClick={() => stopGame("manual")}
                                         className="group flex items-center gap-3 px-8 py-3 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all duration-300"
                                     >
                                         <Square className="w-4 h-4 fill-current" />
