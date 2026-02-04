@@ -6,7 +6,7 @@ interface BattleStageProps {
     intensity?: "low" | "medium" | "high";
 }
 
-export function BattleStage({ children, intensity = "low" }: BattleStageProps) {
+export function BattleStage({ children }: BattleStageProps) {
     return (
         <div className="relative w-full h-screen overflow-hidden bg-black flex flex-col items-center justify-center perspective-1000">
             {/* Ambient Background Layer */}

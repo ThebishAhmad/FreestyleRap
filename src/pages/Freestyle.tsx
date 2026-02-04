@@ -4,7 +4,7 @@ import { PageTransition } from "@/components/layout/page-transition";
 import { MicrophoneMonitor } from "@/components/features/MicrophoneMonitor";
 import { Visualizer } from "@/components/features/Visualizer";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Play, Square, Music, Mic, Activity, Sparkles } from "lucide-react";
+import { ArrowLeft, Play, Square, Music, Activity, Sparkles } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { BeatPlayer } from "@/lib/audio/BeatPlayer";
 import { RecordingModule } from "@/components/features/RecordingModule";

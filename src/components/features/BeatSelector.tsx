@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useBeat } from "@/contexts/BeatContext";
-import { BEATS } from "@/data/beats";
+
 import { Music, ChevronDown, Check, Activity, Link as LinkIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 

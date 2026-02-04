@@ -1,6 +1,6 @@
 import { PageTransition } from "@/components/layout/page-transition";
 import { ArrowLeft, Grid, Sword, Timer, Sparkles } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { NeonButton } from "@/components/ui/neon-button";
 
@@ -71,7 +71,6 @@ const itemVariants = {
 };
 
 export default function Drills() {
-    const navigate = useNavigate();
 
     return (
         <PageTransition>
