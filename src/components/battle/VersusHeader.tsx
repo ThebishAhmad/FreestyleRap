@@ -1,71 +1,85 @@
-import { Trophy, Zap, ArrowLeft } from "lucide-react";
+import { Trophy, Zap, ArrowLeft, Volume2, VolumeX, ShieldAlert } from "lucide-react";
+import { Link } from "react-router-dom";
+import { VolumeControl } from "@/components/features/VolumeControl";
 
 interface VersusHeaderProps {
     round: number;
+    maxRounds: number;
     score: number;
     combo: number;
-    onExit: () => void;
+    isMuted: boolean;
+    onToggleMute: () => void;
     onSurrender: () => void;
 }
 
-export function VersusHeader({ round, score, combo, onExit, onSurrender }: VersusHeaderProps) {
+export function VersusHeader({
+    round,
+    maxRounds,
+    score,
+    combo,
+    isMuted,
+    onToggleMute,
+    onSurrender
+}: VersusHeaderProps) {
     return (
-        <header className="absolute top-0 left-0 right-0 z-50 px-4 py-4 md:px-8 pointer-events-none">
-            <div className="flex items-center justify-between w-full">
-                {/* Left: Exit & Stats */}
-                <div className="flex items-center gap-4 pointer-events-auto">
-                    <button
-                        onClick={onExit}
-                        className="p-2 rounded-full bg-black/40 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                    </button>
+        <header className="w-full pt-20 px-4 md:px-8 flex items-center justify-between relative z-30 select-none">
+            {/* Left: Exit Link & Stats */}
+            <div className="flex items-center gap-3">
+                <Link
+                    to="/"
+                    className="p-2 md:px-3 md:py-1.5 rounded-xl bg-black/60 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors flex items-center gap-1.5 text-xs font-mono"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Hub</span>
+                </Link>
 
-                    <div className="hidden md:flex items-center gap-3">
-                        <div className="bg-black/50 backdrop-blur-md border border-white/10 px-4 py-1.5 rounded-full flex items-center gap-2">
-                            <Trophy className="w-3 h-3 text-yellow-400" />
-                            <span className="text-white font-bold text-sm tracking-wider">{score.toLocaleString()}</span>
-                        </div>
-                        {combo > 0 && (
-                            <div className="bg-black/50 backdrop-blur-md border border-orange-500/30 px-4 py-1.5 rounded-full flex items-center gap-2">
-                                <Zap className="w-3 h-3 text-orange-400" />
-                                <span className="text-orange-400 font-bold text-sm tracking-wider">{combo}x</span>
-                            </div>
-                        )}
-                    </div>
+                <div className="hidden sm:flex items-center gap-2 bg-black/60 border border-white/10 px-3 py-1.5 rounded-xl backdrop-blur-md">
+                    <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="text-white font-mono font-bold text-xs">
+                        {score.toLocaleString()} PTS
+                    </span>
+                    {combo > 1 && (
+                        <span className="text-amber-400 font-mono font-bold text-xs ml-1 flex items-center gap-0.5">
+                            <Zap className="w-3 h-3" /> {combo}x
+                        </span>
+                    )}
                 </div>
+            </div>
 
-                {/* Center: VS Emblem */}
-                <div className="absolute left-1/2 top-4 -translate-x-1/2 flex flex-col items-center">
-                    <div className="flex items-center gap-4 bg-black/60 backdrop-blur-xl border border-white/5 px-6 py-2 rounded-full shadow-2xl">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                            <span className="text-xs font-black tracking-[0.2em] text-blue-200">YOU</span>
-                        </div>
+            {/* Center: VS Badge & Round Tracker */}
+            <div className="flex items-center gap-2 bg-black/75 border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-xl shadow-xl">
+                <span className="text-xs font-mono font-black text-cyan-400 tracking-wider">YOU</span>
+                <span className="text-zinc-600 font-mono font-black italic text-xs px-1">VS</span>
+                <span className="text-xs font-mono font-black text-red-400 tracking-wider">AI</span>
+                <div className="w-[1px] h-3 bg-white/20 mx-1.5" />
+                <span className="text-[11px] font-mono text-zinc-400 font-bold uppercase">
+                    Round {round}/{maxRounds}
+                </span>
+            </div>
 
-                        <span className="text-xl font-black italic text-zinc-600 px-2">VS</span>
+            {/* Right: Sound Controls & Surrender */}
+            <div className="flex items-center gap-2">
+                <VolumeControl variant="pill" align="right" />
 
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-black tracking-[0.2em] text-red-200">AI</span>
-                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                        </div>
-                    </div>
+                <button
+                    onClick={onToggleMute}
+                    className={`p-2 rounded-xl border backdrop-blur-md transition-colors ${
+                        isMuted
+                            ? "bg-red-500/10 border-red-500/30 text-red-400"
+                            : "bg-black/60 border-white/10 text-zinc-400 hover:text-white"
+                    }`}
+                    title={isMuted ? "Unmute Crowd SFX" : "Mute Crowd SFX"}
+                >
+                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </button>
 
-                    {/* Round Indicator Below */}
-                    <div className="mt-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                        Round {round}
-                    </div>
-                </div>
-
-                {/* Right: Surrender */}
-                <div className="pointer-events-auto">
-                    <button
-                        onClick={onSurrender}
-                        className="px-4 py-2 rounded-full border border-red-500/30 text-red-400 text-xs font-bold uppercase hover:bg-red-500/10 hover:border-red-500/60 transition-all"
-                    >
-                        Surrender
-                    </button>
-                </div>
+                <button
+                    onClick={onSurrender}
+                    className="px-3 py-1.5 rounded-xl border border-red-500/30 bg-red-950/20 text-red-400 text-xs font-mono font-bold uppercase hover:bg-red-500/20 hover:border-red-500/60 transition-all flex items-center gap-1"
+                >
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Surrender</span>
+                </button>
             </div>
         </header>
     );

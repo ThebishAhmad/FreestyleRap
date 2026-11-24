@@ -1,73 +1,97 @@
-# React + TypeScript + Vite
+# FLOWSTATE // Freestyle Rap Trainer & AI Battle Arena
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![React](https://img.shields.io/badge/React-18.3-61dafb.svg?style=flat-square&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tone.js](https://img.shields.io/badge/Tone.js-15.1-f59e0b.svg?style=flat-square)](https://tonejs.github.io/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8.svg?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646cff.svg?style=flat-square&logo=vite)](https://vitejs.dev/)
 
-Currently, two official plugins are available:
+**FLOWSTATE** is an interactive, low-latency web application designed to help aspiring and seasoned freestyle rappers hone their improvisational skills, cadence, multi-syllabic rhyming, and stage presence.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ⚡ Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. 🎤 Freestyle Gym (`/freestyle`)
+- **Continuous Beat Synchronization:** Low-latency Web Audio playback powered by Tone.js with synthesized 808s, chords, kicks, and rolling trap hats.
+- **Neurolinguistic Prompt Engine:** Dynamic word prompts categorized across 10 hip-hop themes with difficulty levels (*Beginner*, *Intermediate*, *Master*).
+- **Rhyme Assists:** Displays 4 multi-syllabic rhyme suggestions underneath every active word to prevent choking or stumbling.
+- **Rhythm 4-Beat Grid:** Visual step sequencer that reinforces landing rhymes on beat 4.
+- **Audio Monitor & Speech Recognition:** Live waveform visualizer and filler word detection (*"um", "uh", "like"*).
+- **In-App Rap Recording:** Record full freestyle takes with one-click preview playback, timer, and optional download without intrusive auto-downloads.
 
-## Expanding the ESLint configuration
+### 2. ⚔️ Battle Arena (`/battle`)
+- **AI Opponents:** Face 3 distinct AI opponents with unique voice cadences, pitches, and roasts:
+  - **MC CYBER-9:** Futuristic algorithmic spitter.
+  - **BIG BOOM:** 90s Bronx boom-bap heavyweight.
+  - **PHANTOM DRILL:** Aggressive UK drill roaster.
+- **Crowd Hype Meter:** Live audience energy tracking that rewards rapid delivery and flow combos.
+- **Counter-Rhyme Suggestions:** When the AI drops a punchline, FLOWSTATE analyzes the roast and delivers instant counter-rhymes for the user's turn!
+- **Battle Stats Summary:** Final score, rounds survived, and battle rank awards.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 3. 🎯 Pattern Trainer (`/drill/pattern`)
+- **Rhyme Scheme Mastery:** Practice structural rhyming formats including Couplets (**AABB**), Alternate (**ABAB**), and Mono (**AAAA**).
+- **Focus Scroll Mode:** Viewport automatically locks onto the active bar and beat.
+- **Custom Game Modes:** Easy, Punchline-only, Cliff-only, and Hidden.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 4. ⏱️ No-Pause Survival Drill (`/drill/no-pause`)
+- **Stamina & Filler Killer:** Continuous rap mode where more than 0.9s of silence triggers instant failure.
+- **Word Prompt Stream:** Rapidly changing prompt ticker with countdown timer.
+- **Personal Best Tracking:** High-score survival time saved persistently in `localStorage`.
+- **Flow Ranks:** Earn titles ranging from *Rookie Breather* to *Untouchable God of Flow*.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 5. 🎛️ Studio Mixer & Custom Beats
+- **6 Built-in Synthesizer Instrumentals:**
+  - *Pro Trap Banger* (140 BPM)
+  - *UK Drill Phantom* (142 BPM)
+  - *90s Golden Era* (92 BPM)
+  - *West Coast Bounce* (96 BPM)
+  - *Midnight Lofi Flow* (82 BPM)
+  - *Neo-Tokyo Grime* (138 BPM)
+- **Custom Beat Support:** Drag-and-drop any MP3 or WAV file; stored automatically in IndexedDB for offline persistence.
+- **Tempo & Metronome:** Dynamic BPM slider (70–160 BPM), master volume slider, and audible metronome click toggle.
+- **Freestyle Handbook:** In-app educational guide breaking down the 4-beat grid, multis, working backward from the rhyme, and breath control.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** React 18 with TypeScript
+- **Audio Synthesis & Scheduling:** Tone.js (Web Audio API)
+- **Styling & UI:** Tailwind CSS, Framer Motion animations
+- **Visuals:** Three.js and custom procedural GLSL grid scanning shader
+- **Storage:** IndexedDB (for custom beats) and `localStorage` (for high scores & word packs)
+- **Speech API:** Web Speech Recognition API & Web SpeechSynthesis
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- npm or pnpm
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/flowstate-rap.git
+cd flowstate-rap
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Production Build
+```bash
+npm run build
+npm run preview
 ```
+
+---
+
+## 🎙️ Recommended Setup
+- **Headphones:** Highly recommended to prevent audio feedback between the microphone and instrumental beats.
+- **Browser:** Chromium-based browsers (Google Chrome, Microsoft Edge, Brave) provide full Web Audio & Web Speech Recognition support.

@@ -1,323 +1,167 @@
 {
-    "AE-AT": [
-        "CAT",
-        "BAT",
-        "HAT",
-        "RAP",
-        "TAP",
-        "MAP",
-        "COMBAT"
+    "AE-AP": [
+        "RAP", "TRAP", "MAP", "SNAP", "CLAP", "STRAP", "WRAP", "OVERLAP", "ENTRAP", "RECAP", "SCRAP", "HANDICAP"
     ],
     "AE-ACK": [
-        "BACK",
-        "BLACK",
-        "SLACK",
-        "TRACK",
-        "PACK",
-        "STACK",
-        "JACK",
-        "CRACK",
-        "ATTACK"
+        "BACK", "BLACK", "TRACK", "PACK", "STACK", "JACK", "CRACK", "ATTACK", "IMPACT", "SLACK", "HIJACK", "KNACK", "FEEDBACK"
+    ],
+    "AE-AT": [
+        "CAT", "BAT", "HAT", "COMBAT", "ACROBAT", "HABITAT", "FORMAT", "DIPLOMAT", "FLAT", "STAT"
     ],
     "AE-ACT": [
-        "FACT",
-        "ACT",
-        "IMPACT",
-        "REACT",
-        "EXACT",
-        "CONTRACT",
-        "CONTACT"
+        "FACT", "ACT", "IMPACT", "REACT", "EXACT", "CONTRACT", "CONTACT", "ABSTRACT", "COMPACT", "SUBTRACT", "ATTRACT"
     ],
-    "AE-ON": [
-        "DRAGON",
-        "WAGON",
-        "FLAGON",
-        "CANNON",
-        "SALMON"
+    "AE-ASH": [
+        "FLASH", "SMASH", "CRASH", "DASH", "CLASH", "CASH", "SPLASH", "BACKLASH", "TRASH"
+    ],
+    "AE-AND": [
+        "STAND", "BAND", "LAND", "COMMAND", "DEMAND", "EXPAND", "GRAND", "BRAND", "STRAND", "UNDERSTAND"
+    ],
+    "AE-ANK": [
+        "BANK", "RANK", "TANK", "BLANK", "PLANK", "FRANK", "CRANK", "OUTRANK"
     ],
     "AY-Y": [
-        "MY",
-        "FLY",
-        "SKY",
-        "HIGH",
-        "MULTIPLY",
-        "IDENTIFY",
-        "JUSTIFY",
-        "AMPLIFY"
+        "MY", "FLY", "SKY", "HIGH", "MULTIPLY", "IDENTIFY", "JUSTIFY", "AMPLIFY", "SUPPLY", "REPLY", "TESTIFY", "CLARIFY"
     ],
     "AY-IDE": [
-        "RIDE",
-        "SIDE",
-        "INSIDE",
-        "OUTSIDE",
-        "DECIDE",
-        "PROVIDE",
-        "DIVIDE",
-        "COLLIDE",
-        "OVERRIDE"
+        "RIDE", "SIDE", "INSIDE", "OUTSIDE", "DECIDE", "PROVIDE", "DIVIDE", "COLLIDE", "OVERRIDE", "STRIDE", "GUIDE", "PRIDE", "LANDSLIDE"
     ],
     "AY-IME": [
-        "TIME",
-        "RHYME",
-        "CLIMB",
-        "LIFETIME"
+        "TIME", "RHYME", "CLIMB", "PRIME", "CHIME", "DIME", "GRIME", "SUBLIME", "LIFETIME", "PARADIGM"
     ],
     "AY-IND": [
-        "MIND",
-        "GRIND",
-        "REWIND",
-        "BEHIND",
-        "REMIND",
-        "UNWIND"
+        "MIND", "GRIND", "REWIND", "BEHIND", "REMIND", "BLIND", "FIND", "COMBINED", "DESIGNED", "REFINED", "ALIGN", "CONFINED"
+    ],
+    "AY-IGHT": [
+        "LIGHT", "NIGHT", "FIGHT", "SIGHT", "BRIGHT", "TIGHT", "FLIGHT", "IGNITE", "POLITE", "EXCITE", "INSIGHT", "HEIGHT", "MIDNIGHT"
+    ],
+    "AY-IRE": [
+        "FIRE", "WIRE", "DESIRE", "EMPIRE", "HIGHER", "INSPIRE", "ACQUIRE", "ASPIRE", "RETIRE", "TRANSCRIBE"
     ],
     "AY-INE": [
-        "SHINE",
-        "DESIGN",
-        "LINE",
-        "FINE",
-        "MINE",
-        "DIVINE",
-        "REFINE",
-        "COMBINE",
-        "ALINE",
-        "DEFINE",
-        "MALIGN",
-        "BENIGN",
-        "RESIGN",
-        "ASSIGN",
-        "SUNSHINE",
-        "TIMELINE",
-        "PIPELINE",
-        "LIFELINE",
-        "HEADLINE",
-        "GUIDELINE",
-        "SKYLINE"
-    ],
-    "AY-ITE": [
-        "SATELLITE",
-        "DYNAMITE"
-    ],
-    "OW-OW": [
-        "FLOW",
-        "GO",
-        "LOW",
-        "SLOW",
-        "SHOW",
-        "KNOW",
-        "OVERFLOW",
-        "UNDERTOW",
-        "TOMORROW",
-        "SORROW",
-        "BORROW",
-        "FOLLOW",
-        "HOLLOW",
-        "SHALLOW",
-        "SWALLOW",
-        "SHADOW",
-        "MEADOW",
-        "WINDOW",
-        "ELBOW",
-        "RAINBOW"
-    ],
-    "OW-ODE": [
-        "CODE",
-        "MODE",
-        "EXPLODE",
-        "EPISODE"
-    ],
-    "OW-OAD": [
-        "ROAD",
-        "DOWNLOAD",
-        "UPLOAD",
-        "OVERLOAD"
-    ],
-    "OW-OLD": [
-        "COLD",
-        "GOLD",
-        "BOLD",
-        "FOLD",
-        "HOLD",
-        "SOLD",
-        "TOLD",
-        "UNFOLD",
-        "BEHOLD",
-        "FORETOLD"
-    ],
-    "OW-OLE": [
-        "CONTROL",
-        "PATROL",
-        "PAROLE",
-        "ENROLL",
-        "CONSOLE"
-    ],
-    "EY-AY": [
-        "STAY",
-        "PLAY",
-        "DAY",
-        "WAY",
-        "SAY",
-        "PAY",
-        "DISPLAY",
-        "DELAY",
-        "DECAY",
-        "ARRAY",
-        "OKAY",
-        "TODAY",
-        "AWAY"
+        "LINE", "SHINE", "MINE", "FINE", "DIVINE", "DESIGN", "DEFINE", "COMBINE", "DECLINE", "HEADLINE", "BASELINE"
     ],
     "EY-AME": [
-        "GAME",
-        "NAME",
-        "SAME"
+        "GAME", "FLAME", "NAME", "FAME", "CLAIM", "BLAME", "SHAME", "FRAME", "TAME", "ACCLAIM", "RENAME"
+    ],
+    "EY-AY": [
+        "STAY", "PLAY", "DAY", "WAY", "SAY", "PAY", "RAY", "DELAY", "DISPLAY", "RELAY", "CONVEY", "BETRAY", "GATEWAY"
     ],
     "EY-ATE": [
-        "LATE",
-        "GREAT",
-        "FATE",
-        "HATE",
-        "GATE",
-        "RATE",
-        "DATE",
-        "CREATE",
-        "DEBATE",
-        "RELATE",
-        "ESTATE",
-        "INMATE",
-        "UPDATE",
-        "TRANSLATE",
-        "VIBRATE",
-        "MIGRATE",
-        "DICTATE",
-        "ROTATE",
-        "LOCATE",
-        "DONATE",
-        "COLLATE",
-        "INFLATE",
-        "DEFLATE",
-        "AWAIT"
+        "LATE", "GREAT", "FATE", "STATE", "CREATE", "DEBATE", "ELEVATE", "REGULATE", "GENERATE", "HESITATE", "TRANSLATE", "NAVIGATE"
     ],
-    "EY-APE": [
-        "ESCAPE",
-        "LANDSCAPE",
-        "TAPE",
-        "SHAPE"
+    "EY-AKE": [
+        "MAKE", "TAKE", "BREAK", "WAKE", "SHAKE", "STAKE", "EARTHQUAKE", "MISTAKE", "FORSAKE", "INTAKE"
     ],
-    "IY-EE": [
-        "SEE",
-        "ME",
-        "FREE",
-        "BE",
-        "KEY",
-        "MACHINERY",
-        "SCENERY",
-        "ENERGY",
-        "MEMORY",
-        "CENTURY",
-        "HISTORY",
-        "VICTORY",
-        "THEORY",
-        "FAMILY"
+    "EY-AIN": [
+        "RAIN", "PAIN", "TRAIN", "CHAIN", "BRAIN", "MAIN", "REMAIN", "CONTAIN", "OBTAIN", "EXPLAIN", "MAINTAIN", "SUSTAIN"
+    ],
+    "EY-ACE": [
+        "FACE", "SPACE", "RACE", "CHASE", "BASE", "PLACE", "EMBRACE", "DISPLACE", "REPLACE", "ERASE"
+    ],
+    "EY-AZE": [
+        "BLAZE", "GAZE", "MAZE", "PHASE", "CRAZE", "AMAZED", "PRAISE", "RAISE"
+    ],
+    "OW-OW": [
+        "FLOW", "GLOW", "BLOW", "SLOW", "SHOW", "KNOW", "GROW", "THROW", "BELOW", "SHADOW", "ECHO"
+    ],
+    "OW-OLD": [
+        "COLD", "GOLD", "BOLD", "HOLD", "TOLD", "CONTROLLED", "ENROLLED", "FORETOLD", "UNFOLD", "HOUSEHOLD"
+    ],
+    "OW-ONE": [
+        "ZONE", "THRONE", "STONE", "BLOWN", "ALONE", "UNKNOWN", "CONDONE", "OVERTHROWN", "MILESTONE", "CYLINDER"
+    ],
+    "OW-OAD": [
+        "ROAD", "LOAD", "CODE", "MODE", "NODE", "EXPLODE", "OVERLOAD", "EPISODE", "DOWNLOAD", "UPLOAD"
+    ],
+    "OW-OKE": [
+        "SMOKE", "CHOKE", "BROKE", "PROVOKE", "EVOKE", "SPOKE", "STROKE", "BESPOKE", "AWOKE"
+    ],
+    "OW-OST": [
+        "GHOST", "POST", "MOST", "COAST", "BOAST", "HOST", "OUTPOST"
     ],
     "IY-EET": [
-        "STREET",
-        "HEAT",
-        "BEAT",
-        "FEET",
-        "COMPLETE",
-        "DELETE",
-        "ELITE",
-        "CONCRETE",
-        "DISCREET",
-        "RETREAT",
-        "DEFEAT",
-        "REPEAT",
-        "RECEIPT"
+        "STREET", "BEAT", "HEAT", "FEET", "DEFEAT", "REPEAT", "ELITE", "CONCRETE", "DISCREET", "COMPLETE", "DELETE", "ATHLETE"
+    ],
+    "IY-EAM": [
+        "DREAM", "STREAM", "BEAM", "TEAM", "SCHEME", "SUPREME", "REDEEM", "EXTREME", "MAINSTREAM"
     ],
     "IY-EAL": [
-        "REAL",
-        "FEEL",
-        "DEAL",
-        "MEAL",
-        "SEAL",
-        "HEAL",
-        "STEAL",
-        "REVEAL",
-        "CONCEAL",
-        "APPEAL",
-        "IDEAL",
-        "UNREAL",
-        "SURREAL",
-        "REPEAL"
+        "STEEL", "REAL", "DEAL", "HEAL", "FEEL", "APPEAL", "CONCEAL", "REVEAL", "UNSEAL", "IDEAL"
     ],
-    "IY-EF": [
-        "BELIEF",
-        "RELIEF"
+    "IY-EEP": [
+        "KEEP", "DEEP", "SLEEP", "LEAP", "SWEEP", "CREEP", "STEEP"
     ],
-    "EH-ET": [
-        "SET",
-        "GET",
-        "LET"
+    "IY-EED": [
+        "SPEED", "BLEED", "NEED", "FEED", "PROCEED", "SUCCEED", "EXCEED", "GUARANTEE", "FREEDOM"
     ],
-    "EH-ECK": [
-        "CHECK",
-        "DECK",
-        "NECK"
-    ],
-    "EH-EP": [
-        "STEP",
-        "REP"
-    ],
-    "EH-EXT": [
-        "TEXT",
-        "NEXT"
+    "IY-EAK": [
+        "SPEAK", "PEAK", "WEAK", "FREAK", "SEEK", "STREAK", "UNIQUE", "TECHNIQUE", "ANTIQUE", "OBLIQUE"
     ],
     "EH-EST": [
-        "BEST",
-        "REST",
-        "TEST",
-        "WEST",
-        "CHEST",
-        "GUEST"
+        "BEST", "REST", "TEST", "WEST", "CHEST", "GUEST", "CONTEST", "REQUEST", "INVEST", "SUGGEST", "MANIFEST", "HARVEST"
     ],
     "EH-ECT": [
-        "RESPECT",
-        "EXPECT",
-        "DETECT",
-        "CONNECT",
-        "DIRECT",
-        "EFFECT",
-        "AFFECT",
-        "PROTECT",
-        "CORRECT",
-        "SELECT",
-        "INJECT",
-        "PROJECT",
-        "REFLECT",
-        "DEFLECT",
-        "NEGLECT",
-        "SUSPECT",
-        "CONCEPT"
-    ],
-    "EH-ERT": [
-        "ASSERT",
-        "EXPERT",
-        "CONVERT",
-        "INSERT",
-        "ALERT",
-        "DESERT",
-        "EFFORT",
-        "COMFORT"
+        "RESPECT", "EXPECT", "DETECT", "CONNECT", "DIRECT", "EFFECT", "PROTECT", "CORRECT", "SELECT", "INJECT", "PROJECT", "REFLECT", "DEFLECT"
     ],
     "EH-ESS": [
-        "ADDRESS",
-        "SUCCESS",
-        "PROCESS",
-        "EXCESS",
-        "ACCESS",
-        "CONGRESS",
-        "PROGRESS",
-        "IMPRESS",
-        "EXPRESS",
-        "DEPRESS"
+        "ADDRESS", "SUCCESS", "PROCESS", "EXCESS", "ACCESS", "PROGRESS", "IMPRESS", "EXPRESS", "STRESS", "CONFESS", "RELENTLESS"
+    ],
+    "EH-END": [
+        "SEND", "BEND", "END", "DEFEND", "EXTEND", "DESCEND", "ASCEND", "FRIEND", "BLEND", "SUSPEND", "TRANSCEND"
+    ],
+    "EH-ELL": [
+        "TELL", "SELL", "BELL", "HELL", "SPELL", "SWELL", "EXCEL", "REBEL", "PARALLEL", "PROPELL"
+    ],
+    "EH-ECK": [
+        "CHECK", "DECK", "NECK", "WRECK", "TECH", "SPEC", "PAYCHECK"
+    ],
+    "EH-EP": [
+        "STEP", "REP", "SWEPT", "ACCEPT", "INTERCEPT", "CONCEPT", "EXCEPT"
+    ],
+    "AW-OUND": [
+        "SOUND", "GROUND", "ROUND", "BOUND", "FOUND", "CROWNED", "ASTOUND", "PROFOUND", "SURROUND", "UNBOUND"
+    ],
+    "AW-OWN": [
+        "CROWN", "DROWN", "DOWN", "TOWN", "RENOWN", "BREAKDOWN", "COUNTDOWN", "MELTDOWN"
+    ],
+    "AW-OUT": [
+        "OUT", "SHOUT", "DOUBT", "ABOUT", "WITHOUT", "THROUGHOUT", "DROUGHT", "STOUT"
+    ],
+    "IH-IP": [
+        "TRIP", "GRIP", "SLIP", "FLIP", "DRIP", "EQUIP", "STRIP", "ECLIPSE", "MEMBERSHIP", "CHAMPIONSHIP"
+    ],
+    "IH-ILL": [
+        "KILL", "SKILL", "CHILL", "DRILL", "THRILL", "SPILL", "FULFILL", "INSTILL", "UPHILL"
+    ],
+    "IH-ICK": [
+        "KICK", "QUICK", "CLICK", "THICK", "TRICK", "STICK", "BRICK", "CONFLICT", "PREDICT", "RESTRICT"
+    ],
+    "IH-IST": [
+        "LIST", "MIST", "TWIST", "WRIST", "EXIST", "RESIST", "ASSIST", "PERSIST", "CONSIST"
+    ],
+    "AA-OCK": [
+        "BLOCK", "CLOCK", "LOCK", "SHOCK", "ROCK", "KNOCK", "STOCK", "GRIDLOCK", "DEADLOCK"
+    ],
+    "AA-OP": [
+        "DROP", "TOP", "STOP", "CHOP", "CROP", "PROP", "NONSTOP", "HIPHOP", "ROOFTOP"
+    ],
+    "AA-OT": [
+        "SHOT", "HOT", "SPOT", "PLOT", "KNOT", "ROBOT", "SLOT", "SNAPSHOT"
+    ],
+    "AA-ALL": [
+        "CALL", "FALL", "WALL", "BALL", "ALL", "HALL", "TALL", "INSTALL", "RECALL", "OVERALL"
+    ],
+    "ER-URN": [
+        "BURN", "TURN", "LEARN", "EARN", "RETURN", "CONCERN", "DISCERN", "UPTURN"
+    ],
+    "ER-URST": [
+        "BURST", "FIRST", "THIRST", "WORST", "OUTBURST"
+    ],
+    "MULTI-ATION": [
+        "NATION", "CREATION", "ELEVATION", "GENERATION", "DEDICATION", "INSPIRATION", "DOMINATION", "CELEBRATION", "SITUATION", "REPUTATION", "CALCULATION", "INNOVATION"
+    ],
+    "MULTI-IC": [
+        "EPIC", "CLASSIC", "MAGIC", "LOGIC", "STATIC", "TRAGIC", "TACTIC", "DYNAMIC", "AUTOMATIC", "SYNTHETIC", "METRIC"
     ]
 }

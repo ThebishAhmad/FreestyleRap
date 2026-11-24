@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { BeatProvider } from "@/contexts/BeatContext";
 import { WordPackProvider } from "@/contexts/WordPackContext";
@@ -6,15 +6,13 @@ import Home from "@/pages/Home";
 // @ts-ignore
 import GridScan from "@/components/ui/GridScan";
 
-// Placeholder imports for pages
 import Freestyle from "@/pages/Freestyle";
-import Drills from "@/pages/Drills";
 import NoPauseDrill from "@/pages/NoPauseDrill";
 import BattleTrainer from "@/pages/BattleTrainer";
-// import FlowTrainer from "@/pages/FlowTrainer";
 import PatternDrill from "@/pages/PatternDrill";
 
 import { SettingsPanel } from "@/components/features/SettingsPanel";
+import { Navbar } from "@/components/layout/Navbar";
 
 function AppContent() {
   const location = useLocation();
@@ -35,15 +33,15 @@ function AppContent() {
           noiseIntensity={0.01}
         />
       </div>
+      <Navbar />
       <SettingsPanel />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
           <Route path="/freestyle" element={<Freestyle />} />
-          <Route path="/drills" element={<Drills />} />
+          <Route path="/drills" element={<Navigate to="/" replace />} />
           <Route path="/drill/no-pause" element={<NoPauseDrill />} />
           <Route path="/battle" element={<BattleTrainer />} />
-          {/* <Route path="/drill/flow" element={<FlowTrainer />} /> // REMOVED */}
           <Route path="/drill/pattern" element={<PatternDrill />} />
         </Routes>
       </AnimatePresence>

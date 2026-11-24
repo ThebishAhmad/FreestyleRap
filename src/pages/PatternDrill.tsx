@@ -1,11 +1,28 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { PageTransition } from "@/components/layout/page-transition";
 import { NeonButton } from "@/components/ui/neon-button";
 import { BeatPlayer } from "@/lib/audio/BeatPlayer";
 import { AudioContextManager } from "@/lib/audio/AudioContextManager";
+import { SpeechEngine } from "@/lib/audio/SpeechEngine";
+import { ArenaAudio } from "@/lib/audio/ArenaAudio";
 import { PatternEngine, PATTERNS } from "@/lib/game/PatternEngine";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Grid, RefreshCw, Mic, Clock, Square } from "lucide-react";
+import {
+    ArrowLeft,
+    Grid,
+    RefreshCw,
+    Mic,
+    Clock,
+    Square,
+    Trophy,
+    Sparkles,
+    CheckCircle2,
+    Music,
+    Volume2,
+    VolumeX,
+    Flame,
+    Radio
+} from "lucide-react";
 import { RhythmGrid } from "@/components/features/RhythmGrid";
 import { useBeatState } from "@/hooks/useBeatTiming";
 import { useBeat } from "@/contexts/BeatContext";
@@ -15,6 +32,7 @@ import { SessionProgress } from "@/components/features/SessionProgress";
 import { motion, AnimatePresence } from "framer-motion";
 import * as Tone from "tone";
 import PillNav from "@/components/ui/PillNav";
+import { VolumeControl } from "@/components/features/VolumeControl";
 
 type GameMode = "easy" | "punchline" | "cliff" | "hidden";
 type SessionLength = 8 | 16 | 32 | 64 | "Infinity";
@@ -27,172 +45,179 @@ export default function PatternDrill() {
     const [gameMode, setGameMode] = useState<GameMode>("easy");
     const [sessionLength, setSessionLength] = useState<SessionLength>(16);
     const [isRecordingEnabled, setIsRecordingEnabled] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [sessionCompleted, setSessionCompleted] = useState(false);
+    const [lockedRhymesCount, setLockedRhymesCount] = useState(0);
+    const [recentLockedWord, setRecentLockedWord] = useState<string | null>(null);
 
     // Viewport Scroll State
     const [startBarIndex, setStartBarIndex] = useState(0);
 
-    // Audio engine ref
+    // Audio & Game refs
     const beatPlayer = useRef(new BeatPlayer());
-    // Pattern logic ref
     const patternEngine = useRef(new PatternEngine());
-    // Ref to track hotswapping and prevent race conditions
+    const speechEngine = useRef(new SpeechEngine());
+    const arenaAudio = useRef(ArenaAudio.getInstance());
     const lastBeatIdRef = useRef<string | null>(currentBeat?.id || null);
+    const lockedTimeoutRef = useRef<number | null>(null);
 
-    // HOOK: Source of Truth for Timing (Low Frequency - purely for Logic/Grid)
+    // Source of Truth for Timing
     const timing = useBeatState(currentBeat, isPlaying);
 
-    // EFFECT: Auto-Scroll Logic (Focus Mode)
-    // Scroll active bar to Top.
+    // Auto-Scroll Logic: Active Bar is always the first row
     useEffect(() => {
         if (!isPlaying) {
             setStartBarIndex(0);
             return;
         }
-        // Active Bar is always the first row. 0, 1, 2, 3...
-        // This hides previous bars immediately.
         setStartBarIndex(timing.currentBar);
     }, [timing.currentBar, isPlaying]);
 
-    // EFFECT: Check Session End
+    // Check Session End
     useEffect(() => {
         if (isPlaying && sessionLength !== "Infinity" && timing.currentBar >= sessionLength) {
-            stopGame("effect");
+            completeSession();
         }
     }, [timing.currentBar, isPlaying, sessionLength]);
 
-    // EFFECT: Hotswap beat
+    // Hotswap beat when not playing
     useEffect(() => {
-        // Init ref if needed (first run safety)
         if (lastBeatIdRef.current === null && currentBeat?.id) {
             lastBeatIdRef.current = currentBeat.id;
         }
-
-        // PREVENT HOTSWAP DURING PLAY - CAUSES SYNC BUGS
-        // Only load if NOT playing.
         if (!isPlaying && !countdown && currentBeat.id !== lastBeatIdRef.current) {
-            // console.log("Pre-loading beat:", currentBeat.name);
             lastBeatIdRef.current = currentBeat.id;
             beatPlayer.current.loadBeat(currentBeat).catch(console.error);
         }
     }, [currentBeat, isPlaying, countdown]);
 
-    // EFFECT: Countdown Logic
+    // Countdown Logic
     useEffect(() => {
         if (countdown === null) return;
 
         if (countdown > 0) {
+            arenaAudio.current.playTick(countdown === 1);
             const timer = setTimeout(() => {
-                setCountdown(prev => prev! - 1);
+                setCountdown((prev) => (prev !== null ? prev - 1 : null));
             }, 1000);
             return () => clearTimeout(timer);
         } else if (countdown === 0) {
-            // GO!
             startAudio();
             setCountdown(null);
         }
     }, [countdown]);
 
-    // EFFECT: Update Word Pack
+    // Update Word Pack
     const { activeWordPack } = useWordPack();
     useEffect(() => {
         patternEngine.current.setPack(activeWordPack);
     }, [activeWordPack]);
 
-    // EFFECT: Cleanup on unmount (navigation)
+    // Cleanup on unmount
     useEffect(() => {
         return () => {
             beatPlayer.current.stop();
-            // Reset global volume just in case
-            Tone.Destination.volume.rampTo(-6, 0.1);
+            speechEngine.current.stop();
+            if (lockedTimeoutRef.current) clearTimeout(lockedTimeoutRef.current);
         };
     }, []);
 
+    const toggleMute = () => {
+        const next = !isMuted;
+        setIsMuted(next);
+        arenaAudio.current.setMuted(next);
+    };
+
     const startGame = async () => {
-        // Initialize Pattern Engine
+        setSessionCompleted(false);
+        setLockedRhymesCount(0);
+        setRecentLockedWord(null);
+        patternEngine.current.reset();
         patternEngine.current.setPattern(patternId);
 
-        // Sync beat ID to prevent immediate hotswap race condition
         if (currentBeat) lastBeatIdRef.current = currentBeat.id;
 
-        // Resume Context on Click (User Gesture)
         try {
             await AudioContextManager.getInstance().initialize();
-
-            // Load words/beat but don't play yet
             await beatPlayer.current.loadBeat(currentBeat);
 
-            // Mute initially
-            Tone.Destination.volume.value = -60;
-
-            // IMMEDIATE TRANSITION: Switch Scene First
             setIsPlaying(true);
-
-            // Start Countdown
             setCountdown(3);
         } catch (error) {
             console.error("Failed to start pattern drill:", error);
             setIsPlaying(false);
-            // Optional: Show toast or error UI
         }
     };
 
     const startAudio = async () => {
         try {
             await beatPlayer.current.start();
-            Tone.Destination.volume.rampTo(-6, 0.5); // Quick fade-in
+            arenaAudio.current.playRoundBell();
 
-            // SCHEDULE AUTO-STOP (Post-Start to avoid .cancel() wipe)
-            if (sessionLength !== "Infinity") {
-                // Schedule stop exactly at the end of the last bar (e.g., "16:0:0")
-                Tone.Transport.scheduleOnce(() => {
-                    console.log("Session limit reached (Tone Scheduler)");
-                    stopGame("scheduler");
-                }, `${sessionLength}:0:0`);
-            }
+            // Start SpeechEngine to detect spoken target rhymes
+            speechEngine.current.start((text: string) => {
+                checkSpokenRhyme(text);
+            });
         } catch (e) {
             console.error("Failed to start audio", e);
             stopGame("error");
         }
     };
 
-    const stopGame = (source = "user") => {
-        console.log("Stopping Game. Source:", source);
-        // Fade out polish (Faster now)
-        Tone.Destination.volume.rampTo(-60, 0.1);
-        setTimeout(() => {
-            beatPlayer.current.stop();
-            setIsPlaying(false);
-            setCountdown(null);
-            Tone.Destination.volume.value = -6; // Reset
-        }, 100);
+    // Check if the user spoke the expected rhyme word for the current active bar
+    const checkSpokenRhyme = (transcript: string) => {
+        if (!transcript.trim()) return;
+        const currentContent = patternEngine.current.getContentForBar(timing.currentBar);
+        const targetWord = currentContent.suggestion.toLowerCase();
+
+        const words = transcript.toLowerCase().split(/\s+/);
+        if (words.some((w) => w.includes(targetWord) || targetWord.includes(w))) {
+            // Rhyme Locked!
+            setLockedRhymesCount((prev) => prev + 1);
+            setRecentLockedWord(currentContent.suggestion);
+            arenaAudio.current.playSuccessChime();
+
+            if (lockedTimeoutRef.current) clearTimeout(lockedTimeoutRef.current);
+            lockedTimeoutRef.current = window.setTimeout(() => {
+                setRecentLockedWord(null);
+            }, 1800);
+        }
     };
 
-    const togglePattern = () => {
-        const keys = Object.keys(PATTERNS);
-        const currentIndex = keys.indexOf(patternId);
-        const nextIndex = (currentIndex + 1) % keys.length;
-        setPatternId(keys[nextIndex]);
+    const completeSession = () => {
+        beatPlayer.current.stop();
+        speechEngine.current.stop();
+        setIsPlaying(false);
+        setSessionCompleted(true);
+        arenaAudio.current.playCrowdCheer("hype");
+        arenaAudio.current.playAirhorn();
+    };
+
+    const stopGame = (source = "user") => {
+        beatPlayer.current.stop();
+        speechEngine.current.stop();
+        setIsPlaying(false);
+        setCountdown(null);
     };
 
     /**
-     * Determines if a word should be visible based on Game Mode and Slot Position.
+     * Determines visibility based on Game Mode and slot index
      */
     const getVisibility = (slotIndex: number, slots: string[]): boolean => {
         if (gameMode === "easy") return true;
         if (gameMode === "hidden") return false;
 
         const group = slots[slotIndex];
-        // Find all indices of this group in the pattern
-        const groupIndices = slots.map((s, i) => s === group ? i : -1).filter(i => i !== -1);
-        const positionInGroup = groupIndices.indexOf(slotIndex); // 0 = first, 1 = second...
+        const groupIndices = slots.map((s, i) => (s === group ? i : -1)).filter((i) => i !== -1);
+        const positionInGroup = groupIndices.indexOf(slotIndex);
 
         if (gameMode === "punchline") {
-            // Show ONLY the last one in the group
+            // Show only the last one in the group
             return positionInGroup === groupIndices.length - 1;
         }
 
         if (gameMode === "cliff") {
-            // Show ONLY the first one in the group
+            // Show only the first one in the group
             return positionInGroup === 0;
         }
 
@@ -201,22 +226,18 @@ export default function PatternDrill() {
 
     return (
         <PageTransition>
-            <div className="flex flex-col min-h-screen bg-transparent text-white relative overflow-hidden font-sans selection:bg-cyan-500/30">
+            <div className="flex flex-col min-h-screen bg-transparent text-white relative overflow-hidden font-sans">
+                {/* Header Navigation */}
+                <header className="pt-20 px-6 flex items-center justify-between w-full max-w-7xl mx-auto z-20">
+                    <Link to="/">
+                        <NeonButton variant="secondary" size="sm">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Hub
+                        </NeonButton>
+                    </Link>
 
+                    <div className="flex items-center gap-3">
+                        <VolumeControl variant="pill" align="right" />
 
-                {/* HEADER / NAV */}
-                <header className="fixed top-0 left-0 right-0 z-40 px-6 py-6 flex items-center justify-between pointer-events-none">
-                    {/* Left: Back Button Area (Pointer events auto) */}
-                    <div className="pointer-events-auto">
-                        <Link to="/drills">
-                            <NeonButton variant="secondary" size="sm">
-                                <ArrowLeft className="mr-2 h-4 w-4" /> Exit Drill
-                            </NeonButton>
-                        </Link>
-                    </div>
-
-                    {/* Right: Recording Status (Visible when playing) */}
-                    <div className="pointer-events-auto">
                         {isRecordingEnabled && (
                             <RecordingModule isRecording={isPlaying && !countdown} autoArm={true} />
                         )}
@@ -224,250 +245,272 @@ export default function PatternDrill() {
                 </header>
 
                 <main className="flex-1 flex flex-col items-center justify-center relative p-4 md:p-8 z-10 w-full max-w-7xl mx-auto">
-
-                    {/* GAME AREA - Modes */}
-                    <div className={`${isPlaying ? "opacity-0 pointer-events-none translate-y-[-20px] scale-90 absolute" : "mb-12 relative flex justify-center w-full"}`}>
-                        <PillNav
-                            initialLoadAnimation={true}
-                            className="bg-black/60 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl"
-                            activeHref={gameMode}
-                            baseColor="#000000"
-                            pillColor="#ffffff"
-                            pillTextColor="#000000"
-                            hoveredPillTextColor="#ffffff"
-                            items={[
-                                { label: "Easy", onClick: () => setGameMode("easy"), href: "easy" },
-                                { label: "Punchline", onClick: () => setGameMode("punchline"), href: "punchline" },
-                                { label: "Cliff", onClick: () => setGameMode("cliff"), href: "cliff" },
-                                { label: "Hidden", onClick: () => setGameMode("hidden"), href: "hidden" }
-                            ]}
-                        />
-                    </div>
-
+                    {/* Setup Screen */}
                     <AnimatePresence mode="wait">
-                        {!isPlaying ? (
+                        {!isPlaying && !sessionCompleted ? (
                             <motion.div
                                 key="setup"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 1.05, filter: "blur(8px)" }}
-                                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                className="flex-1 flex flex-col items-center justify-center max-w-2xl text-center z-20"
+                                transition={{ duration: 0.4 }}
+                                className="flex-1 flex flex-col items-center justify-center max-w-2xl text-center z-20 w-full"
                             >
-                                {/* Hero Icon with Ambient Glow */}
-                                <div className="mb-8 relative">
-                                    <div className="absolute inset-0 bg-cyan-500/20 blur-[80px] rounded-full animate-pulse-glow" />
-                                    <motion.div
-                                        initial={{ scale: 0.9, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        transition={{ delay: 0.1 }}
-                                        className="relative z-10 glass-surface p-8 rounded-3xl shadow-2xl"
-                                    >
-                                        <Grid className="w-16 h-16 text-cyan-400" />
-                                    </motion.div>
-                                </div>
+                                <div className="space-y-6 bg-black/90 p-8 md:p-12 rounded-[2.5rem] border border-white/10 backdrop-blur-2xl shadow-2xl w-full">
+                                    <div className="w-16 h-16 rounded-3xl bg-cyan-500/10 border border-cyan-500/30 grid place-items-center mx-auto text-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.25)]">
+                                        <Grid className="w-8 h-8" />
+                                    </div>
 
-                                {/* Pattern Title */}
-                                <motion.h1
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.15 }}
-                                    className="text-display text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/30 mb-3 select-none"
-                                >
-                                    {PATTERNS[patternId].name}
-                                </motion.h1>
-
-                                <motion.p
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.2 }}
-                                    className="text-lg text-zinc-400 mb-10 font-light"
-                                >
-                                    Master the <span className="text-caption text-cyan-400 bg-cyan-950/40 px-2 py-1 rounded-md border border-cyan-500/20">{PATTERNS[patternId].slots.join("-")}</span> rhyme scheme
-                                </motion.p>
-
-                                {/* Settings Row */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.25 }}
-                                    className="flex gap-4 mb-10 w-full max-w-md"
-                                >
-                                    {/* Length Selector */}
-                                    <div className="flex-1 glass-surface p-4 rounded-2xl flex flex-col items-center gap-3 group">
-                                        <span className="text-caption text-zinc-500 flex items-center gap-1.5">
-                                            <Clock className="w-3 h-3" /> Bars
+                                    <div>
+                                        <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-cyan-400 uppercase px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/30">
+                                            RHYME SCHEME ENGINE
                                         </span>
-                                        <div className="flex gap-1.5">
-                                            {(["16", "32", "inf"] as const).map(l => (
-                                                <button
-                                                    key={l}
-                                                    onClick={() => setSessionLength(l === "inf" ? "Infinity" : parseInt(l) as SessionLength)}
-                                                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${((sessionLength === "Infinity" && l === "inf") || sessionLength === parseInt(l))
-                                                        ? "bg-cyan-500 text-black shadow-lg shadow-cyan-500/25"
-                                                        : "text-zinc-500 bg-white/5 hover:bg-white/10 hover:text-white"
+                                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight uppercase mt-3">
+                                            Pattern Trainer
+                                        </h1>
+                                        <p className="text-zinc-400 text-sm mt-2 max-w-md mx-auto">
+                                            Train complex cadences and lock your punchlines on beat 4.
+                                        </p>
+                                    </div>
+
+                                    {/* Rhyme Scheme Selector Cards */}
+                                    <div className="space-y-2 text-left">
+                                        <span className="text-xs font-mono uppercase text-zinc-500 tracking-wider block text-center">
+                                            Select Rhyme Scheme
+                                        </span>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                            {Object.values(PATTERNS).map((pat) => {
+                                                const isSel = patternId === pat.id;
+                                                return (
+                                                    <button
+                                                        key={pat.id}
+                                                        type="button"
+                                                        onClick={() => setPatternId(pat.id)}
+                                                        className={`p-3 rounded-2xl border text-center transition-all ${
+                                                            isSel
+                                                                ? "bg-cyan-500/20 border-cyan-400 text-white shadow-lg shadow-cyan-500/25 scale-[1.02]"
+                                                                : "bg-white/5 border-white/5 text-zinc-400 hover:text-white"
                                                         }`}
+                                                    >
+                                                        <div className="text-xs font-black block font-mono uppercase">{pat.name}</div>
+                                                        <div className="text-[10px] font-mono text-cyan-400 font-bold mt-1">
+                                                            {pat.slots.join("-")}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Game Mode Pill Selector */}
+                                    <div className="space-y-2">
+                                        <span className="text-xs font-mono uppercase text-zinc-500 tracking-wider block">
+                                            Drill Mode
+                                        </span>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {(["easy", "punchline", "cliff", "hidden"] as GameMode[]).map((mode) => (
+                                                <button
+                                                    key={mode}
+                                                    type="button"
+                                                    onClick={() => setGameMode(mode)}
+                                                    className={`py-2 px-2.5 rounded-xl text-xs font-mono font-bold capitalize transition-all ${
+                                                        gameMode === mode
+                                                            ? "bg-white text-black shadow-md"
+                                                            : "bg-white/5 border border-white/5 text-zinc-400 hover:text-white"
+                                                    }`}
                                                 >
-                                                    {l === "inf" ? "∞" : l}
+                                                    {mode}
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
 
-                                    {/* Recording Toggle */}
-                                    <div className="flex-1 glass-surface p-4 rounded-2xl flex flex-col items-center gap-3 group">
-                                        <span className="text-caption text-zinc-500 flex items-center gap-1.5">
-                                            <Mic className="w-3 h-3" /> Record
-                                        </span>
-                                        <button
-                                            onClick={() => setIsRecordingEnabled(!isRecordingEnabled)}
-                                            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${isRecordingEnabled
-                                                ? "bg-red-500 text-white shadow-lg shadow-red-500/25"
-                                                : "text-zinc-500 bg-white/5 hover:bg-white/10 hover:text-white"
+                                    {/* Length & Record Options */}
+                                    <div className="grid grid-cols-2 gap-3 pt-2">
+                                        <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-1.5">
+                                            <span className="text-[10px] font-mono text-zinc-500 flex items-center gap-1">
+                                                <Clock className="w-3 h-3" /> SESSION LENGTH
+                                            </span>
+                                            <div className="flex gap-1">
+                                                {(["16", "32", "inf"] as const).map((l) => (
+                                                    <button
+                                                        key={l}
+                                                        onClick={() =>
+                                                            setSessionLength(l === "inf" ? "Infinity" : (parseInt(l) as SessionLength))
+                                                        }
+                                                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold ${
+                                                            (sessionLength === "Infinity" && l === "inf") ||
+                                                            sessionLength === parseInt(l)
+                                                                ? "bg-cyan-500 text-black"
+                                                                : "bg-white/5 text-zinc-400"
+                                                        }`}
+                                                    >
+                                                        {l === "inf" ? "∞" : `${l}B`}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-1.5">
+                                            <span className="text-[10px] font-mono text-zinc-500 flex items-center gap-1">
+                                                <Mic className="w-3 h-3" /> AUDIO RECORDING
+                                            </span>
+                                            <button
+                                                onClick={() => setIsRecordingEnabled(!isRecordingEnabled)}
+                                                className={`px-4 py-1 rounded-lg text-xs font-mono font-bold ${
+                                                    isRecordingEnabled ? "bg-red-500 text-white" : "bg-white/5 text-zinc-400"
                                                 }`}
-                                        >
-                                            {isRecordingEnabled ? "ON" : "OFF"}
-                                        </button>
+                                            >
+                                                {isRecordingEnabled ? "ENABLED" : "OFF"}
+                                            </button>
+                                        </div>
                                     </div>
-                                </motion.div>
 
-                                {/* Primary CTA */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="flex flex-col gap-4 w-full max-w-sm mx-auto"
-                                >
-                                    <NeonButton
-                                        size="xl"
-                                        onClick={startGame}
-                                        variant="primary"
-                                        className="w-full"
-                                    >
-                                        START SESSION
+                                    <NeonButton size="xl" onClick={startGame} className="w-full mt-2" variant="primary">
+                                        <Flame className="w-5 h-5 mr-2" /> START PATTERN SESSION
                                     </NeonButton>
-
-                                    <button
-                                        onClick={togglePattern}
-                                        className="flex items-center justify-center gap-2 text-caption text-zinc-500 hover:text-white transition-colors py-2"
-                                    >
-                                        <RefreshCw className="h-3 w-3" /> Change Pattern
-                                    </button>
-                                </motion.div>
+                                </div>
                             </motion.div>
-                        ) : (
+                        ) : isPlaying ? (
                             <motion.div
                                 key="active"
-                                initial={{ opacity: 0, y: 30 }}
+                                initial={{ opacity: 0, y: 25 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 30 }}
-                                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                exit={{ opacity: 0, y: 25 }}
                                 className="w-full flex flex-col items-center justify-center relative z-20"
                             >
-                                {/* Compact HUD */}
-                                <div className="w-full flex items-center justify-center gap-8 mb-6">
-                                    {/* Pattern Badge */}
-                                    <div className="glass-surface px-4 py-2 rounded-full flex items-center gap-2">
-                                        <Grid className="w-4 h-4 text-cyan-400" />
-                                        <span className="text-title text-white">{PATTERNS[patternId].name}</span>
+                                {/* Top Beat & Metronome Pulser Bar */}
+                                <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 max-w-6xl">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-black/75 border border-white/10 px-4 py-1.5 rounded-full flex items-center gap-2 backdrop-blur-md">
+                                            <Grid className="w-4 h-4 text-cyan-400" />
+                                            <span className="text-xs font-mono font-bold text-white">
+                                                {PATTERNS[patternId].name} ({PATTERNS[patternId].slots.join("-")})
+                                            </span>
+                                        </div>
+
+                                        <SessionProgress
+                                            isPlaying={isPlaying}
+                                            sessionLength={sessionLength}
+                                            currentBar={timing.currentBar}
+                                            beat={currentBeat}
+                                        />
                                     </div>
 
-                                    {/* Progress Counter - Optimized Component */}
-                                    <SessionProgress
-                                        isPlaying={isPlaying}
-                                        sessionLength={sessionLength}
-                                        currentBar={timing.currentBar}
-                                        beat={currentBeat}
-                                    />
+                                    {/* 4-Beat Real-Time Metronome Pulser */}
+                                    <div className="flex items-center gap-2 bg-black/75 border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md">
+                                        <span className="text-[10px] font-mono text-zinc-500 uppercase mr-1">Beat:</span>
+                                        {[0, 1, 2, 3].map((b) => {
+                                            const isCurrent = timing.beatIndex === b;
+                                            return (
+                                                <div
+                                                    key={b}
+                                                    className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-black text-xs transition-all ${
+                                                        isCurrent
+                                                            ? b === 3
+                                                                ? "bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.8)] scale-110"
+                                                                : "bg-cyan-400 text-black shadow-[0_0_15px_rgba(6,182,212,0.8)] scale-110"
+                                                            : "bg-white/5 text-zinc-500"
+                                                    }`}
+                                                >
+                                                    {b + 1}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
 
-                                {/* MAIN GRID HUD */}
-                                <div className="w-full max-w-6xl aspect-[16/9] max-h-[65vh] glass-surface rounded-[2rem] p-3 shadow-2xl overflow-hidden relative group">
-                                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none" />
+                                {/* Floating Rhyme Locked Toast */}
+                                <AnimatePresence>
+                                    {recentLockedWord && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -15, scale: 0.9 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            className="mb-3 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400 text-white font-mono font-black text-xs flex items-center gap-1.5 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                                        >
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                            <span>RHYME LOCKED: "{recentLockedWord}" (+300 PTS)</span>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
-
-
+                                {/* Main Rhythm Grid Screen */}
+                                <div className="w-full max-w-6xl aspect-[16/9] max-h-[62vh] glass-surface rounded-[2rem] p-3 shadow-2xl overflow-hidden relative">
                                     <RhythmGrid
                                         rows={4}
-                                        barsPerRow={4} // This is actually BEATS per row
-                                        startBarIndex={Math.max(0, startBarIndex * 4)} // Convert Bar Scroll to Step Scroll (Bar 0 -> Step 0, Bar 1 -> Step 4)
-                                        activeBarIndex={(timing.currentBar * 4) + timing.beatIndex} // Pass Cumulative Step (Bar * 4 + Beat)
+                                        barsPerRow={4}
+                                        startBarIndex={Math.max(0, startBarIndex * 4)}
+                                        activeBarIndex={timing.currentBar * 4 + timing.beatIndex}
                                         renderBarContent={(globalStepIndex, isActive) => {
-                                            // "Cell" Logic (Beat)
                                             const globalBarIndex = Math.floor(globalStepIndex / 4);
-                                            const beatInBar = globalStepIndex % 4; // 0, 1, 2, 3
-
-                                            const isLastBeat = beatInBar === 3; // The "4th Number"
+                                            const beatInBar = globalStepIndex % 4;
+                                            const isLastBeat = beatInBar === 3;
 
                                             if (isLastBeat) {
-                                                // Show Rhyme Word on the 4th Beat
                                                 const rowTarget = patternEngine.current.getContentForBar(globalBarIndex);
-
                                                 const patternLength = PATTERNS[patternId].slots.length;
                                                 const slotIndex = globalBarIndex % patternLength;
                                                 const isVisible = getVisibility(slotIndex, PATTERNS[patternId].slots);
 
                                                 return (
-                                                    <div className="flex flex-col items-center justify-center h-full w-full gap-2 relative overflow-hidden">
+                                                    <div className="flex flex-col items-center justify-center h-full w-full gap-1 relative overflow-hidden">
                                                         <div
                                                             className={`
-                                                            relative px-4 py-3 rounded-2xl border transition-all duration-300 transform w-full text-center flex items-center justify-center shadow-lg
-                                                            ${isActive
-                                                                    ? "bg-cyan-500 text-black border-cyan-400 scale-105 shadow-[0_0_30px_rgba(6,182,212,0.5)] z-10"
-                                                                    : "bg-white/5 text-white/80 border-white/5"}
-                                                            ${!isVisible ? "opacity-30 blur-[2px] grayscale border-transparent bg-transparent" : "opacity-100"}
-                                                        `}
+                                                                relative px-3 py-2 rounded-2xl border transition-all duration-300 w-full text-center flex items-center justify-center shadow-lg
+                                                                ${
+                                                                    isActive
+                                                                        ? "bg-cyan-500 text-black border-cyan-400 scale-105 shadow-[0_0_30px_rgba(6,182,212,0.6)] z-10 font-black"
+                                                                        : "bg-white/5 text-white/80 border-white/5"
+                                                                }
+                                                                ${!isVisible ? "opacity-30 blur-[2px] grayscale border-transparent bg-transparent" : "opacity-100"}
+                                                            `}
                                                         >
-                                                            <span className="text-xl md:text-3xl font-black uppercase tracking-tight truncate filter drop-shadow-md">
+                                                            <span className="text-lg md:text-2xl font-black uppercase tracking-tight truncate">
                                                                 {isVisible ? rowTarget.suggestion : "???"}
                                                             </span>
                                                         </div>
 
-                                                        {/* Vowel Helper Pill */}
-                                                        {gameMode !== "hidden" && isActive && (
-                                                            <motion.div
-                                                                initial={{ opacity: 0, y: 10 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                className="absolute -bottom-8 left-1/2 -translate-x-1/2"
-                                                            >
-                                                                <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/30 whitespace-nowrap shadow-xl">
-                                                                    {rowTarget.vowel.split('-')[0]} Note
-                                                                </span>
-                                                            </motion.div>
+                                                        {isActive && (
+                                                            <div className="text-[10px] font-mono text-cyan-300 font-bold uppercase">
+                                                                {rowTarget.vowel.split("-")[0]} Sound
+                                                            </div>
                                                         )}
                                                     </div>
                                                 );
                                             }
 
-                                            // Beats 1, 2, 3 -> Show Number
                                             return (
-                                                <div className={`flex flex-col items-center justify-center h-full w-full transition-all duration-300 ${isActive ? "scale-110 opacity-100" : "opacity-10"}`}>
-                                                    <span className={`font-black text-4xl md:text-5xl select-none pointer-events-none ${isActive ? "text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" : "text-white/50"}`}>
+                                                <div
+                                                    className={`flex flex-col items-center justify-center h-full w-full transition-all ${
+                                                        isActive ? "scale-110 opacity-100" : "opacity-15"
+                                                    }`}
+                                                >
+                                                    <span className="font-black text-3xl md:text-4xl text-white">
                                                         {beatInBar + 1}
                                                     </span>
                                                 </div>
                                             );
                                         }}
                                     />
-
                                 </div>
 
-                                {/* COUNTDOWN OVERLAY - FIXED SCREEN CENTER */}
+                                {/* Countdown Overlay */}
                                 <AnimatePresence>
                                     {countdown !== null && (
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
-                                            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md pointer-events-none"
+                                            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md pointer-events-none"
                                         >
                                             <motion.div
                                                 key={countdown}
                                                 initial={{ scale: 0.5, opacity: 0 }}
-                                                animate={{ scale: 1.5, opacity: 1 }}
+                                                animate={{ scale: 1.4, opacity: 1 }}
                                                 exit={{ scale: 2, opacity: 0 }}
-                                                transition={{ duration: 0.5, type: "spring" }}
-                                                className="font-black text-[12rem] text-transparent bg-clip-text bg-gradient-to-br from-cyan-400 to-blue-600 drop-shadow-[0_0_50px_rgba(6,182,212,0.8)]"
+                                                transition={{ duration: 0.4 }}
+                                                className="font-black text-[12rem] text-transparent bg-clip-text bg-gradient-to-br from-cyan-400 to-blue-600 drop-shadow-[0_0_60px_rgba(6,182,212,0.9)]"
                                             >
                                                 {countdown}
                                             </motion.div>
@@ -475,33 +518,71 @@ export default function PatternDrill() {
                                     )}
                                 </AnimatePresence>
 
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 1 }}
-                                    className="flex justify-center mt-8"
-                                >
+                                {/* Bottom Stop CTA */}
+                                <div className="flex justify-center mt-6">
                                     <button
                                         onClick={() => stopGame("manual")}
-                                        className="group flex items-center gap-3 px-8 py-3 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all duration-300"
+                                        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500 hover:text-white transition-all text-xs font-mono font-bold uppercase"
                                     >
-                                        <Square className="w-4 h-4 fill-current" />
-                                        <span className="text-sm font-bold tracking-widest uppercase">End Session</span>
+                                        <Square className="w-3.5 h-3.5 fill-current" />
+                                        <span>End Session</span>
                                     </button>
-                                </motion.div>
+                                </div>
                             </motion.div>
-                        )
-                        }
+                        ) : (
+                            /* Session Completed Screen */
+                            <motion.div
+                                key="complete"
+                                initial={{ opacity: 0, scale: 0.92 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto text-center my-auto w-full"
+                            >
+                                <div className="bg-black/90 p-8 md:p-12 rounded-[2.5rem] border border-white/10 backdrop-blur-2xl shadow-2xl w-full space-y-6">
+                                    <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 grid place-items-center mx-auto text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                                        <Trophy className="w-8 h-8" />
+                                    </div>
+
+                                    <div>
+                                        <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-emerald-400 uppercase px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30">
+                                            PATTERN COMPLETE
+                                        </span>
+                                        <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight uppercase mt-3">
+                                            SESSION CONCLUDED
+                                        </h2>
+                                        <p className="text-zinc-300 text-sm mt-1">
+                                            Pattern: {PATTERNS[patternId].name} • {sessionLength} Bars
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 pt-2">
+                                        <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                                            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wide block">BARS SPIT</span>
+                                            <span className="text-2xl font-mono font-black text-white mt-1 block">{timing.currentBar}</span>
+                                        </div>
+                                        <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                                            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wide block">RHYMES LOCKED</span>
+                                            <span className="text-2xl font-mono font-black text-cyan-400 mt-1 block">{lockedRhymesCount}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3 pt-2">
+                                        <NeonButton size="xl" onClick={startGame} variant="primary" className="flex-1">
+                                            <RefreshCw className="mr-2 h-4 w-4" /> DRILL AGAIN
+                                        </NeonButton>
+                                        <NeonButton
+                                            size="xl"
+                                            onClick={() => setSessionCompleted(false)}
+                                            variant="secondary"
+                                            className="flex-1"
+                                        >
+                                            CHANGE SCHEME
+                                        </NeonButton>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
                     </AnimatePresence>
                 </main>
-
-                {/* DEBUG OVERLAY (Hidden visually but kept for structure) */}
-                <div className="fixed bottom-0 right-0 opacity-0 pointer-events-none">
-                    {/* Progress removed from debug as it's no longer in main state */}
-                    <div>Bar: {timing.currentBar}</div>
-                    <div>Focus: {startBarIndex}</div>
-                </div>
-
             </div>
         </PageTransition>
     );

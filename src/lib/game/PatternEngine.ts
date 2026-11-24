@@ -8,16 +8,16 @@ export interface PatternConfig {
 }
 
 export const PATTERNS: Record<string, PatternConfig> = {
-    "AABB": { id: "AABB", name: "Couplets", slots: ["A", "A", "B", "B"] },
-    "ABAB": { id: "ABAB", name: "Alternate", slots: ["A", "B", "A", "B"] },
-    "AAAA": { id: "AAAA", name: "Mono", slots: ["A", "A", "A", "A"] },
-    "A_AA": { id: "A_AA", name: "Hybrid", slots: ["A", "A", "A", "A"] },
+    "AABB": { id: "AABB", name: "Couplets", slots: ["A", "A", "B", "B"], description: "Classic pairs of rhyming lines. Ideal for punchlines." },
+    "ABAB": { id: "ABAB", name: "Alternate", slots: ["A", "B", "A", "B"], description: "Interlocking cross rhymes for dynamic storytelling." },
+    "AAAA": { id: "AAAA", name: "Monorhyme", slots: ["A", "A", "A", "A"], description: "Four-bar single sound barrage for relentless flow." },
+    "ABBA": { id: "ABBA", name: "Enclosed", slots: ["A", "B", "B", "A"], description: "Outer lines frame an inner couplet for sophisticated closure." },
 };
 
 export const COLOR_MAP: Record<string, string> = {
     "A": "#F97316", // Orange
-    "B": "#3B82F6", // Blue
-    "C": "#22C55E", // Green
+    "B": "#06B6D4", // Cyan
+    "C": "#A855F7", // Purple
     "D": "#EAB308", // Yellow
 };
 
@@ -30,10 +30,17 @@ export class PatternEngine {
     private currentPattern: PatternConfig = PATTERNS["AABB"];
     private currentPack: WordPack = DEFAULT_WORD_PACK;
 
-    // wordCache removed in favor of barWordCache
+    // Cache targets per 4-bar stanza: stanzaIndex -> { "A": RhymeTarget, "B": RhymeTarget }
+    private stanzaVowelCache: Record<number, Record<string, RhymeTarget>> = {};
 
-    // Cache vowels per verse (A -> "OH", B -> "AY")
-    private vowelCache: Record<number, Record<string, RhymeTarget>> = {};
+    // Cache words by global absolute bar index (0-indexed)
+    private barWordCache: Record<number, Word> = {};
+
+    // Track recently used vowel IDs to prevent consecutive stanzas from picking the same sounds
+    private recentVowels: string[] = [];
+
+    // Track all words used during the current session to guarantee zero word repetition
+    private usedWordsInSession: Set<string> = new Set();
 
     constructor() {
         this.reset();
@@ -58,196 +65,157 @@ export class PatternEngine {
         return this.currentPattern;
     }
 
-    // Pool state: rhymeId -> list of words remaining
-    private wordPools: Record<string, Word[]> = {};
-
-    // reset() is defined below to clear barWordCache
-    // private wordCache: Record<number, Record<string, Word>> = {}; // This was removed
-    // public reset() {
-    //     this.wordCache = {};
-    //     this.vowelCache = {};
-    //     this.refreshPools();
-    // }
-
-    private refreshPools() {
-        // Initialize or top-up pools
-        if (!this.currentPack) return;
-
-        Object.keys(this.currentPack.rhyme_map).forEach(rhymeId => {
-            if (!this.wordPools[rhymeId] || this.wordPools[rhymeId].length === 0) {
-                this.wordPools[rhymeId] = this.shuffleArray([...this.currentPack.rhyme_map[rhymeId]]);
-            }
-        });
+    public reset() {
+        this.barWordCache = {};
+        this.stanzaVowelCache = {};
+        this.recentVowels = [];
+        this.usedWordsInSession.clear();
     }
 
-    private getRandomTarget(): RhymeTarget {
-        const vowels = Object.keys(this.currentPack.rhyme_map);
-        const randomVowel = vowels[Math.floor(Math.random() * vowels.length)];
+    /**
+     * Retrieves all available vowel keys that have at least 4 words in the pack
+     */
+    private getAvailableVowelKeys(): string[] {
+        if (!this.currentPack || !this.currentPack.rhyme_map) return [];
+        return Object.keys(this.currentPack.rhyme_map).filter(
+            (k) => this.currentPack.rhyme_map[k] && this.currentPack.rhyme_map[k].length >= 3
+        );
+    }
+
+    /**
+     * Pick a random rhyme target that hasn't been used recently
+     */
+    private getFreshRhymeTarget(excludedVowelsInStanza: Set<string>): RhymeTarget {
+        const allKeys = this.getAvailableVowelKeys();
+        if (allKeys.length === 0) {
+            return { vowel: "AE-AP", words: [] };
+        }
+
+        // Filter out vowels used in this stanza and recent stanzas
+        const candidates = allKeys.filter(
+            (k) => !excludedVowelsInStanza.has(k) && !this.recentVowels.includes(k)
+        );
+
+        const pool = candidates.length > 0 ? candidates : allKeys.filter((k) => !excludedVowelsInStanza.has(k));
+        const finalPool = pool.length > 0 ? pool : allKeys;
+
+        const pickedKey = finalPool[Math.floor(Math.random() * finalPool.length)];
+
+        // Record into sliding history of last 8 used vowel sounds
+        this.recentVowels.push(pickedKey);
+        if (this.recentVowels.length > 8) {
+            this.recentVowels.shift();
+        }
+
         return {
-            vowel: randomVowel,
-            words: this.currentPack.rhyme_map[randomVowel]
+            vowel: pickedKey,
+            words: this.currentPack.rhyme_map[pickedKey] || []
         };
     }
 
-    private getVowelsForVerse(verse: number): Record<string, RhymeTarget> {
-        if (this.vowelCache[verse]) return this.vowelCache[verse];
+    /**
+     * Computes or retrieves unique rhyme vowel targets for each 4-bar stanza block
+     */
+    private getVowelsForStanza(stanzaIndex: number): Record<string, RhymeTarget> {
+        if (this.stanzaVowelCache[stanzaIndex]) {
+            return this.stanzaVowelCache[stanzaIndex];
+        }
 
-        // Unique groups in current pattern (e.g. A, B)
         const uniqueGroups = Array.from(new Set(this.currentPattern.slots));
-        const verseVowels: Record<string, RhymeTarget> = {};
+        const stanzaVowels: Record<string, RhymeTarget> = {};
+        const usedInThisStanza = new Set<string>();
 
-        // Assign a unique vowel target to each group
-        const usedVowels = new Set<string>();
-
-        uniqueGroups.forEach(group => {
-            let target = this.getRandomTarget();
-            // Try to find a unique vowel not used yet in this verse
-            let attempts = 0;
-            while (usedVowels.has(target.vowel) && attempts < 20) {
-                target = this.getRandomTarget();
-                attempts++;
-            }
-            usedVowels.add(target.vowel);
-            verseVowels[group] = target;
+        uniqueGroups.forEach((group) => {
+            const target = this.getFreshRhymeTarget(usedInThisStanza);
+            usedInThisStanza.add(target.vowel);
+            stanzaVowels[group] = target;
         });
 
-        this.vowelCache[verse] = verseVowels;
-        return this.vowelCache[verse];
+        this.stanzaVowelCache[stanzaIndex] = stanzaVowels;
+        return stanzaVowels;
     }
 
     private shuffleArray<T>(array: T[]): T[] {
-        for (let i = array.length - 1; i > 0; i--) {
+        const copy = [...array];
+        for (let i = copy.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [copy[i], copy[j]] = [copy[j], copy[i]];
         }
-        return array;
+        return copy;
     }
 
+    /**
+     * Selects a fresh word for a target, guaranteeing zero repetition in the session
+     */
     private getNextWord(target: RhymeTarget): Word {
-        // Ensure pool exists and has words
-        const rhymeId = target.vowel;
+        const rhymeWords = target.words || [];
 
-        // Safety fallback if rhyme ID logic is fuzzy (target.vowel vs target.words[0].phonetic_rhyme_id)
-        // We use the vowel key from rhyme_map
-        if (!this.wordPools[rhymeId] || this.wordPools[rhymeId].length === 0) {
-            // Refill
-            const freshWords = this.currentPack.rhyme_map[rhymeId];
-            if (!freshWords || freshWords.length === 0) {
-                // Critical failure fallback
-                return { word: "???", syllable_count: 1, phonetic_rhyme_id: rhymeId, tags: [] };
-            }
-            this.wordPools[rhymeId] = this.shuffleArray([...freshWords]);
+        // 1. Try to find words in this rhyme family that haven't been used yet in this session
+        const unusedWords = rhymeWords.filter((w) => !this.usedWordsInSession.has(w.word.toUpperCase()));
+
+        let selectedWord: Word;
+        if (unusedWords.length > 0) {
+            // Pick randomly from unused words
+            selectedWord = unusedWords[Math.floor(Math.random() * unusedWords.length)];
+        } else if (rhymeWords.length > 0) {
+            // If all words in this family were already exhausted, pick any random one
+            selectedWord = rhymeWords[Math.floor(Math.random() * rhymeWords.length)];
+        } else {
+            // Fallback word
+            selectedWord = { word: "CROWN", syllable_count: 1, phonetic_rhyme_id: target.vowel, tags: [] };
         }
 
-        // Pop one word
-        return this.wordPools[rhymeId].pop()!;
+        // Mark as used in session
+        this.usedWordsInSession.add(selectedWord.word.toUpperCase());
+        return selectedWord;
     }
 
-    // Cache words by absolute bar index to ensure history is preserved but never repeated cyclically
-    private barWordCache: Record<number, Word> = {};
-
-    public reset() {
-        this.barWordCache = {};
-        this.vowelCache = {};
-        this.refreshPools();
-    }
-
-    // ... (keep refreshPools, shuffleArray, getNextWord as is)
-
+    /**
+     * Returns the rhyme word and metadata for a specific global bar (0-indexed)
+     */
     private getWordForBar(barIndex: number): Word {
-        if (this.barWordCache[barIndex]) return this.barWordCache[barIndex];
+        if (this.barWordCache[barIndex]) {
+            return this.barWordCache[barIndex];
+        }
 
-        // 1. Determine which verse this bar belongs to (for Rhyme Target consistency)
-        // A verse is typically 16 bars. We keep the same *rhyme sounds* (e.g. "AY", "OH") for a duration?
-        // Or should AABB change rhymes every 4 bars?
-        // Usually AABB implies the structure.
-        // Let's stick to: Vowels are consistent for the "Verse" (16 bars), but words change.
-        const verseIndex = Math.floor(barIndex / 16); // 0, 1...
-
-        // 2. Determine Pattern Slot (A, B, etc)
-        const patternLength = this.currentPattern.slots.length; // 4
-        // Which slot in the pattern? 0..3
+        const patternLength = this.currentPattern.slots.length; // e.g. 4 bars per stanza
+        const stanzaIndex = Math.floor(barIndex / patternLength);
         const slotIndex = barIndex % patternLength;
         const group = this.currentPattern.slots[slotIndex];
 
-        // 3. Get the Vowel Target for this Group in this Verse
-        const verseVowels = this.getVowelsForVerse(verseIndex);
-        const target = verseVowels[group];
+        // Each 4-bar stanza gets its own fresh vowel targets!
+        const stanzaVowels = this.getVowelsForStanza(stanzaIndex);
+        const target = stanzaVowels[group];
 
-        // 4. Get a FRESH word from the pool
         const word = this.getNextWord(target);
-
-        // 5. Cache it
         this.barWordCache[barIndex] = word;
         return word;
     }
 
-    public getTargetForBar(_bar: number, _verse: number = 0): {
-        vowel: string,
-        label: string,
-        suggestion: string,
-        color: string
-    } {
-        // Bar is 1-indexed incoming? 
-        // Let's assume input 'bar' is globalBarIndex (0-indexed) to avoid confusion, 
-        // OR PatternDrill is passing 1-indexed relative bars.
-
-        // CORRECTION: The caller (PatternDrill) was passing (relativeBar, verse).
-        // note: relativeBar was 1..4.
-        // We really need GLOBAL bar index to be unique.
-        // I will change the signature to accept `globalBarIndex` (0-indexed).
-
-        // If the caller passes (1..4, verse), we can reconstruct:
-        // global = (verse * 16) + (relative - 1).
-
-        // BUT logic is cleaner if we just ask for `globalBarIndex`.
-        // I will handle the conversion here if needed, or assume the caller updates.
-        // To be safe and compatible with current PatternDrill call:
-        // PatternDrill calls: `getTargetForBar(relativeBarInPattern, currentVerseForThisBar)` 
-        // val 1: 1..4
-        // val 2: 0..N
-
-        // Let's reinterpret arguments.
-        // arg1: barNum (could be global if we change caller, but currently relative)
-        // arg2: verseNum
-
-        // Implied global index:
-        // This is tricky because `relativeBar` wraps every 4.
-        // We don't know if it's bar 5 (relative 1) or bar 1 (relative 1).
-        // WE NEED THE CALLER TO PASS GLOBAL INDEX.
-
-        // I will overload or change behavior. Current caller passes `relativeBarInPattern` (1-4).
-        // I cannot derive global index from (1-4) and verse (0) uniquely if verse=16 bars.
-        // (Verse 0 has Bar 1, 2, 3, 4 AND Bar 5, 6, 7, 8).
-        // Bar 5 is relative 1 (in pattern AABB).
-        // So `PatternDrill` MUST pass specific global index.
-
-        return { vowel: "", label: "", suggestion: "UPDATE_CALLER", color: "#F00" };
-    }
-
-    // NEW METHOD to be used by updated PatternDrill
+    /**
+     * API consumed by PatternDrill UI to render the 4th beat rhyme tile
+     */
     public getContentForBar(globalBarIndex: number): {
-        vowel: string,
-        label: string,
-        suggestion: string,
-        color: string
+        vowel: string;
+        label: string;
+        suggestion: string;
+        color: string;
     } {
         const word = this.getWordForBar(globalBarIndex);
 
         const patternLength = this.currentPattern.slots.length;
+        const stanzaIndex = Math.floor(globalBarIndex / patternLength);
         const slotIndex = globalBarIndex % patternLength;
         const group = this.currentPattern.slots[slotIndex];
 
-        // Get vowel for display
-        const verseIndex = Math.floor(globalBarIndex / 16);
-        const verseVowels = this.getVowelsForVerse(verseIndex);
-        const vowel = verseVowels[group]?.vowel || "?";
+        const stanzaVowels = this.getVowelsForStanza(stanzaIndex);
+        const vowel = stanzaVowels[group]?.vowel || "RHYME";
 
         return {
             vowel,
             label: group,
             suggestion: word.word,
-            color: COLOR_MAP[group] || "#FFF"
+            color: COLOR_MAP[group] || "#06B6D4"
         };
     }
 }

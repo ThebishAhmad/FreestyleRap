@@ -665,6 +665,7 @@ export const GridScan = ({
     }, [enableGyro, uiFaceActive]);
 
     useEffect(() => {
+        if (!enableWebcam) return;
         let canceled = false;
         const load = async () => {
             try {

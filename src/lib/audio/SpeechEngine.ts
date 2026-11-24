@@ -2,6 +2,7 @@ export class SpeechEngine {
     private recognition: any | null = null; // using any for webkitSpeechRecognition
     private isListening: boolean = false;
     private onResultCallback: ((text: string, isFinal: boolean) => void) | null = null;
+    private onErrorCallback: ((err: string) => void) | null = null;
 
     constructor() {
         if (typeof window !== 'undefined') {
@@ -17,13 +18,26 @@ export class SpeechEngine {
         }
     }
 
+    public isSupported(): boolean {
+        return this.recognition !== null;
+    }
+
+    public getIsListening(): boolean {
+        return this.isListening;
+    }
+
     public start(
         onResult: (text: string, isFinal: boolean) => void,
-        onFiller?: (word: string) => void
+        onFiller?: (word: string) => void,
+        onError?: (err: string) => void
     ) {
-        if (!this.recognition) return;
+        if (!this.recognition) {
+            if (onError) onError("unsupported");
+            return;
+        }
 
         this.onResultCallback = onResult;
+        this.onErrorCallback = onError || null;
 
         this.recognition.onresult = (event: any) => {
             let interimTranscript = '';
@@ -57,6 +71,9 @@ export class SpeechEngine {
         };
 
         this.recognition.onerror = (event: any) => {
+            if (this.onErrorCallback && event.error) {
+                this.onErrorCallback(event.error);
+            }
             // Ignore common non-critical errors or just log debug
             if (event.error === 'no-speech' || event.error === 'network') {
                 console.debug("Speech recognition minor error:", event.error);
